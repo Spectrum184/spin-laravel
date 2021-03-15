@@ -59,6 +59,7 @@
     <div class="container mt-3">
         @yield('content')
     </div>
+    <script src="{{ asset('js/exports.js') }}"></script>
 </body>
 
 </html>

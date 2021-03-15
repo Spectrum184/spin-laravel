@@ -45,7 +45,8 @@ class ProductLocationController extends Controller
      */
     public function store(RequestsProductLocation $request)
     {
-        $validated = $request->validate();
+        $location = $this->productLocation::create($request->all());
+        return redirect('export/locations/search?pro_no=' . $location->pro_no)->with('message', 'Created location');
     }
 
     /**
@@ -78,9 +79,11 @@ class ProductLocationController extends Controller
      * @param  \App\ProductLocation  $productLocation
      * @return \Illuminate\Http\Response
      */
-    public function edit(ProductLocation $productLocation)
+    public function edit($id)
     {
-        //
+        $location = $this->productLocation::find($id);
+
+        return view('exports.locations.edit', ['location' => $location]);
     }
 
     /**
@@ -90,9 +93,12 @@ class ProductLocationController extends Controller
      * @param  \App\ProductLocation  $productLocation
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ProductLocation $productLocation)
+    public function update(RequestsProductLocation $request, $id)
     {
-        //
+        $location = $this->productLocation::find($id);
+        $location->update($request->all());
+
+        return redirect('export/locations/search?pro_no=' . $location->pro_no)->with('message', 'Updated location');
     }
 
     /**
@@ -101,8 +107,8 @@ class ProductLocationController extends Controller
      * @param  \App\ProductLocation  $productLocation
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ProductLocation $productLocation)
+    public function destroy($id)
     {
-        //
+        dd($id);
     }
 }

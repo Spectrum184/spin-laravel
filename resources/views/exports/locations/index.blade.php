@@ -56,7 +56,14 @@
                         <form method="POST" action="{{route('locations.destroy', $location->id)}}">
                             @csrf
                             @method('DELETE')
-                            <a class="btn btn-danger">Delete</a>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#exampleModal">
+                                Delete
+                            </button>
+                            @component('components.modal', ['title'=>$location->pro_no, 'id'=> $location->id])
+
+                            @endcomponent
                         </form>
                     </div>
                 </td>

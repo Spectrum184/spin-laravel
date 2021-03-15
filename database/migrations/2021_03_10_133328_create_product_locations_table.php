@@ -14,7 +14,7 @@ class CreateProductLocationsTable extends Migration
     public function up()
     {
         Schema::create('product_locations', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->string('pro_no', 25)->nullable(false);
             $table->unsignedInteger('building_no')->nullable();
             $table->unsignedInteger('floor_no')->nullable();
