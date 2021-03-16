@@ -13,7 +13,7 @@ class CreateProductLocationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_locations', function (Blueprint $table) {
+        Schema::create('product_location', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('pro_no', 25)->nullable(false);
             $table->unsignedInteger('building_no')->nullable();
@@ -34,6 +34,6 @@ class CreateProductLocationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_locations');
+        Schema::dropIfExists('product_location');
     }
 }

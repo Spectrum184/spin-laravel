@@ -79,7 +79,7 @@
             </div>
 
             <div class="links">
-                {{-- <a href="{{route()}}" class="btn btn-primary">Manager</a> --}}
+                <a href="{{route('manager')}}" class="btn btn-primary mr-2">Manager</a>
 
                 <a href="{{ route('export') }}" class="btn btn-primary">Export</a>
             </div>

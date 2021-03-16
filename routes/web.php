@@ -27,6 +27,11 @@ Route::prefix('export')->group(function () {
     Route::resource('locations', 'ProductLocationController');
 });
 
+Route::prefix('manager')->group(function () {
+    Route::get('/', 'HelloController@hello')->name('manager');
+    Route::get('/mitsubishi-forecast', 'ForecastController@index')->name('mftbc.forecast.index');
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
