@@ -1,5 +1,4 @@
 const mix = require("laravel-mix");
-
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -16,4 +15,5 @@ mix.js("resources/js/app.js", "public/js")
     .sourceMaps();
 
 mix.js(["resources/js/exports/exports.js"], "public/js/exports.js");
+
 mix.js(["resources/js/managers/forecast.js"], "public/js/forecast.js");

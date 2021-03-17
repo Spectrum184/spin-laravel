@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class Forecast extends Model
@@ -18,6 +19,9 @@ class Forecast extends Model
         'Prod_No', 'Prod_Name', 'Delv_Point', 'Fol_Proc', 'Fcst_Qty', 'Fcst_Delv', 'Fcst_Season', 'Order_Comfirm',
     ];
 
+    /**
+     * get data from database
+     */
     public function loadData()
     {
         $data = DB::select('SELECT ORDER_Prod_No, t1.Req_Due_Date as R_DUE_DATE, R_QTY, Stock, P_QTY, ifnull(Product_div,0) as P_DIV, Prod_Parts_Name, Matl_Property, X_Elem_Size, Y_Elem_Size, Z_Elem_Size, Paint_CD1, Paint_CD2 FROM (SELECT rtrim(t_parts_productplan.Prod_No)
@@ -31,5 +35,15 @@ class Forecast extends Model
         group by productplan_table.Cust_CD, ORDER_Prod_No, R_DUE_DATE) t3 left join t_parts_productplan on t3.ORDER_Prod_No=t_parts_productplan.Prod_No and t3.CCD=t_parts_productplan.Cust_CD and t3.R_DUE_DATE=t_parts_productplan.Req_Due_Date where Req_Qty Is Null ORDER BY P_DIV, ORDER_Prod_No, R_DUE_DATE');
 
         return $data;
+    }
+
+    public function filterData($division)
+    {
+
+        $data = $this->loadData();
+
+        $filteredData = collect($data)->where('P_DIV', $division)->all();
+
+        return $filteredData;
     }
 }

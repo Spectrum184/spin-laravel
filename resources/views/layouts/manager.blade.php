@@ -59,7 +59,6 @@
     <div class="container mt-3">
         @yield('content')
     </div>
-    <script src="{{ asset('js/forecast.js') }}"></script>
 </body>
 
 </html>

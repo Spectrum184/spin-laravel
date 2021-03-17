@@ -28,9 +28,11 @@ class ForecastController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function returnData()
+    public function returnData(Request $request)
     {
-        $data = $this->forecast->loadData();
+        $division = $request->get('division');
+
+        $data = $this->forecast->filterData($division);
 
         return response()->json($data);
     }
