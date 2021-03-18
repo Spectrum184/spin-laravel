@@ -37,6 +37,9 @@ class Forecast extends Model
         return $data;
     }
 
+    /**
+     * filter data by p_div
+     */
     public function filterData($division)
     {
 
@@ -44,6 +47,21 @@ class Forecast extends Model
 
         $filteredData = collect($data)->where('P_DIV', $division)->all();
 
-        return $filteredData;
+        $processedData = $this->processData($filteredData);
+
+        return $processedData;
+    }
+
+    /**
+     * process data in to managable format
+     */
+    public function processData($data)
+    {
+        $processData=collect($data)->groupBy('ORDER_Prod_No');
+        
+
+        //$processData->foreach()
+
+        return $processData;
     }
 }
