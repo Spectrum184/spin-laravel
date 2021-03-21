@@ -57,11 +57,14 @@ class Forecast extends Model
      */
     public function processData($data)
     {
-        $processData=collect($data)->groupBy('ORDER_Prod_No');
-        
+        $cleanData = collect(null);
 
-        //$processData->foreach()
+        $tmp = collect($data)->groupBy('ORDER_Prod_No');
 
-        return $processData;
+        foreach ($tmp as $key => $value) {
+            $cleanData->push($value);
+        }
+
+        return $cleanData;
     }
 }
