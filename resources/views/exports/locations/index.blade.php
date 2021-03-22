@@ -42,28 +42,26 @@
             @if ($locations->isNotEmpty())
             @foreach ($locations as $location)
             <tr>
-                <td>{{ $location->pro_no }}</td>
-                <td>{{ $location->building_no }}</td>
-                <td>{{ $location->floor_no }}</td>
-                <td>{{ $location->row_locate }}</td>
-                <td>{{ $location->no_locate }}</td>
-                <td>{{ $location->shelf }}</td>
-                <td>{{ $location->qty }}</td>
-                <td>{{ $location->note }}</td>
+                <td>{{ $location->Pro_No }}</td>
+                <td>{{ $location->Building_No }}</td>
+                <td>{{ $location->Floor_No }}</td>
+                <td>{{ $location->Row_Locate }}</td>
+                <td>{{ $location->No_Locate }}</td>
+                <td>{{ $location->Shelf }}</td>
+                <td>{{ $location->Qty }}</td>
+                <td>{{ $location->Note }}</td>
                 <td>
                     <div class="d-flex">
                         <a class="btn btn-primary mr-2" href="{{ route('locations.edit', $location->id) }}">Edit</a>
-                        <form method="POST" action="{{route('locations.destroy', $location->id)}}">
+                        <form id="form-{{ $location->id }}" method="POST"
+                            action="{{route('locations.destroy', $location->id)}}">
                             @csrf
                             @method('DELETE')
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-danger" data-toggle="modal"
-                                data-target="#exampleModal">
+                            <button id="{{ $location->id }}" type="button" class="btn btn-danger btn-delete"
+                                data-toggle="modal" data-target="#exampleModal">
                                 Delete
                             </button>
-                            @component('components.modal', ['title'=>$location->pro_no, 'id'=> $location->id])
-
-                            @endcomponent
                         </form>
                     </div>
                 </td>
@@ -77,5 +75,26 @@
         </tbody>
     </table>
     @endisset
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title <span id="idProductLocation"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Do you want to delete?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmDelete">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

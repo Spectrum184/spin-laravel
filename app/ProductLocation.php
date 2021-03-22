@@ -16,13 +16,13 @@ class ProductLocation extends Model
      * @var array
      */
     protected $fillable = [
-        'pro_no', 'building_no', 'floor_no', 'row_locate', 'no_locate', 'shelf', 'qty', 'note',
+        'Pro_No', 'Building_No', 'Floor_No', 'Row_Locate', 'No_Locate', 'Shelf', 'Qty', 'Note',
     ];
 
     public function findByProNo($pro_no)
     {
         $pro_no_tmp = $pro_no;
-        $locations = DB::table('product_location')->where('pro_no', 'like', '%' . $pro_no_tmp . '%')->get();
+        $locations = DB::table('product_location')->where('Pro_No', 'like', '%' . $pro_no_tmp . '%')->get();
 
         return $locations;
     }

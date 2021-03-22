@@ -7,8 +7,7 @@
     <div class="col-3"></div>
     <div class="col-6 d-flex">
         <select id="select-division" class="custom-select">
-            <option selected>Open this select menu</option>
-            <option value="H1">製品/手溶接: H1</option>
+            <option selected value="H1">製品/手溶接: H1</option>
             <option value="R1">製品/ロボット: R1</option>
             <option value="A1">製品/赤井: A1</option>
             <option value="IN1">製品/単体品: IN1</option>
@@ -38,7 +37,8 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Add more product</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Add more product: <span id="addProductTitle"></span>
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

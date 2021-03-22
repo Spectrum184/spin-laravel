@@ -10,14 +10,13 @@ const selected = $("#select-division");
 const productContent = $(".product-content");
 const URL = "http://127.0.0.1:8000/api/";
 
-
 const app = {
     data: [],
     // order data get from server
     orderData: [],
     //data day of chart
     dayData: [],
-    sessionData : [],
+    sessionData: [],
     monthData: [],
     timeData: null,
     // data list of chart
@@ -42,17 +41,22 @@ const app = {
     },
 
     // init data for array session caculator
-    getArrayDataSession : function(){
+    getArrayDataSession: function() {
         const lengthArr = this.sessionData.length;
         const arrTmp = [];
-        const lastDayOfMonth = moment().add(1, 'month').endOf('month').format('MM/DD');
-        const month = moment().add(1, 'month').format("MM");
+        const lastDayOfMonth = moment()
+            .add(1, "month")
+            .endOf("month")
+            .format("MM/DD");
+        const month = moment()
+            .add(1, "month")
+            .format("MM");
 
         switch (lengthArr) {
             case 1:
                 arrTmp.push(lastDayOfMonth);
                 break;
-            
+
             case 2:
                 arrTmp.push(month + "/20", lastDayOfMonth);
                 break;
@@ -75,7 +79,7 @@ const app = {
 
         const arrSession = this.getArrayDataSession();
         const arrMonth = [];
-        
+
         // data first of chart
         const dataNow = [];
         //data second of chart,
@@ -88,7 +92,16 @@ const app = {
         let index = 0;
         let indexTmp = 0;
 
-        arrMonth.push(moment().add(2, "M").endOf('M').format("MM/DD"), moment().add(3, "M").endOf('M').format("MM/DD"));
+        arrMonth.push(
+            moment()
+                .add(2, "M")
+                .endOf("M")
+                .format("MM/DD"),
+            moment()
+                .add(3, "M")
+                .endOf("M")
+                .format("MM/DD")
+        );
 
         let arrTime = null;
         arrTime = this.dayData.concat(arrSession, arrMonth);
@@ -138,13 +151,14 @@ const app = {
         for (index; index < arrTime.length; index++) {
             for (let index1 = 0; index1 < lengthOfDataTmp; index1++) {
                 if (
-                    (this.compareDate(
+                    this.compareDate(
                         arrayTmp[index1].R_DUE_DATE,
                         arrTime[index - 1]
-                    ) == 1) && (this.compareDate(
+                    ) == 1 &&
+                    this.compareDate(
                         arrayTmp[index1].R_DUE_DATE,
                         arrTime[index + 1]
-                    ) == -1) 
+                    ) == -1
                 ) {
                     valueFirst1 -= Number(arrayTmp[index1].R_QTY);
                     valueFirst2 =
@@ -167,9 +181,9 @@ const app = {
     },
 
     fillChartData: function(arrData) {},
-    
+
     // get length for init dayData and for initSession
-    getLengthOfDayData: function(){
+    getLengthOfDayData: function() {
         const session1 =
             moment()
                 .add(1, "month")
@@ -184,29 +198,46 @@ const app = {
                 .add(1, "month")
                 .format("MM") + "/21";
 
-        const dayTmp = moment().add(1, "month").format("MM/DD");
-        const sessionTmp = moment().format('YYYY') + "/";
+        const dayTmp = moment()
+            .add(1, "month")
+            .format("MM/DD");
+        const sessionTmp = moment().format("YYYY") + "/";
         const arrayTmp = [];
         arrayTmp.push(session1, session2, session3);
-        
+
         if (this.compareDate(dayTmp, session1) == -1) {
             arrayTmp.push(1);
-            arrayTmp.push(moment(sessionTmp + session1, "YYYY/MM/DD").diff(moment(), 'days') + 1);
+            arrayTmp.push(
+                moment(sessionTmp + session1, "YYYY/MM/DD").diff(
+                    moment(),
+                    "days"
+                ) + 1
+            );
             return arrayTmp;
-        }else if (this.compareDate(dayTmp, session2) == -1) {
-            arrayTmp,push(2);
-            arrayTmp.push(moment(sessionTmp + session2, "YYYY/MM/DD").diff(moment(), 'days') + 1);
+        } else if (this.compareDate(dayTmp, session2) == -1) {
+            arrayTmp, push(2);
+            arrayTmp.push(
+                moment(sessionTmp + session2, "YYYY/MM/DD").diff(
+                    moment(),
+                    "days"
+                ) + 1
+            );
 
             return arrayTmp;
-        }else{
+        } else {
             arrayTmp.push(3);
-            arrayTmp.push(moment(sessionTmp + session3, "YYYY/MM/DD").diff(moment(), 'days') + 1);
-            
+            arrayTmp.push(
+                moment(sessionTmp + session3, "YYYY/MM/DD").diff(
+                    moment(),
+                    "days"
+                ) + 1
+            );
+
             return arrayTmp;
         }
     },
 
-    initSessionData: function(){
+    initSessionData: function() {
         const arrTmp = this.getLengthOfDayData();
         const key = arrTmp[3];
 
@@ -217,16 +248,16 @@ const app = {
             case 2:
                 this.sessionData.push(arrTmp[1], arrTmp[2]);
             default:
-                this.sessionData.push(arrTmp[2])
+                this.sessionData.push(arrTmp[2]);
                 break;
         }
     },
 
-    initMonthData : function(){
+    initMonthData: function() {
         const twoMonthAfter =
-        moment()
-            .add(2, "month")
-            .format("MM") + "/01";
+            moment()
+                .add(2, "month")
+                .format("MM") + "/01";
 
         const threeMonthAfter =
             moment()
@@ -247,10 +278,9 @@ const app = {
                 .format("MM/DD");
             this.dayData.push(day);
         }
-
     },
 
-    initTimeData: function(){
+    initTimeData: function() {
         this.initDayData();
         this.initSessionData();
         this.initMonthData();
@@ -365,6 +395,7 @@ const app = {
                 $("#modalAddProduct .order-qty").innerText = orderQty.innerText;
                 $("#modalAddProduct .product-qty").innerText =
                     productQty.innerText;
+                $("#modalAddProduct #addProductTitle").innerText = id;
             };
         });
     },
@@ -461,8 +492,7 @@ const app = {
 
         this.initTimeData();
 
-        console.log(this.timeData)
-        console.log(this.dayData)
+        console.log(this.timeData);
 
         //render chart
         this.render();

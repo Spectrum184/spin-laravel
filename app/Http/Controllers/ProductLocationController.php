@@ -109,6 +109,9 @@ class ProductLocationController extends Controller
      */
     public function destroy($id)
     {
-        dd($id);
+        $post = $this->productLocation::find($id);
+        $post->delete();
+
+        return redirect('export/locations')->with('message', 'Deleted');
     }
 }
