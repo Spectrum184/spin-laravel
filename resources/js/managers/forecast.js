@@ -1,4 +1,3 @@
-window._ = require("lodash");
 window.axios = require("axios");
 window.moment = require("moment");
 require("chart.js");
@@ -11,12 +10,16 @@ const selected = $("#select-division");
 const productContent = $(".product-content");
 const URL = "http://127.0.0.1:8000/api/";
 
+
 const app = {
     data: [],
     // order data get from server
     orderData: [],
     //data day of chart
     dayData: [],
+    sessionData : [],
+    monthData: [],
+    timeData: null,
     // data list of chart
     arrChart: [],
     //
@@ -38,6 +41,30 @@ const app = {
         else return 0;
     },
 
+    // init data for array session caculator
+    getArrayDataSession : function(){
+        const lengthArr = this.sessionData.length;
+        const arrTmp = [];
+        const lastDayOfMonth = moment().add(1, 'month').endOf('month').format('MM/DD');
+        const month = moment().add(1, 'month').format("MM");
+
+        switch (lengthArr) {
+            case 1:
+                arrTmp.push(lastDayOfMonth);
+                break;
+            
+            case 2:
+                arrTmp.push(month + "/20", lastDayOfMonth);
+                break;
+
+            default:
+                arrTmp.push(month + "/10", month + "/20", lastDayOfMonth);
+                break;
+        }
+
+        return arrTmp;
+    },
+
     //init data for chart
     initChartData: function(arrData) {
         const dataPro = arrData[0];
@@ -45,6 +72,10 @@ const app = {
         const lengthOfDataDay = this.dayData.length;
         const arrayTmp = [];
         const arrDataChart = [];
+
+        const arrSession = this.getArrayDataSession();
+        const arrMonth = [];
+        
         // data first of chart
         const dataNow = [];
         //data second of chart,
@@ -54,6 +85,13 @@ const app = {
         let valueFirst1 = 0;
         let valueFirst2 = 0;
         let lengthOfDataTmp = 0;
+        let index = 0;
+        let indexTmp = 0;
+
+        arrMonth.push(moment().add(2, "M").endOf('M').format("MM/DD"), moment().add(3, "M").endOf('M').format("MM/DD"));
+
+        let arrTime = null;
+        arrTime = this.dayData.concat(arrSession, arrMonth);
 
         // calculate first value of chart data
         arrData.forEach(data => {
@@ -75,13 +113,38 @@ const app = {
 
         lengthOfDataTmp = arrayTmp.length;
 
-        for (let index = 0; index < lengthOfDataDay; index++) {
+        for (index; index < lengthOfDataDay; index++) {
             for (let index1 = 0; index1 < lengthOfDataTmp; index1++) {
                 if (
                     this.compareDate(
                         arrayTmp[index1].R_DUE_DATE,
                         this.dayData[index]
                     ) == 0
+                ) {
+                    valueFirst1 -= Number(arrayTmp[index1].R_QTY);
+                    valueFirst2 =
+                        valueFirst2 +
+                        Number(arrayTmp[index1].P_QTY) -
+                        Math.abs(Number(arrayTmp[index1].R_QTY));
+
+                    break;
+                }
+            }
+
+            dataNow[index] = valueFirst1;
+            dataAfterProduct[index] = valueFirst2;
+        }
+
+        for (index; index < arrTime.length; index++) {
+            for (let index1 = 0; index1 < lengthOfDataTmp; index1++) {
+                if (
+                    (this.compareDate(
+                        arrayTmp[index1].R_DUE_DATE,
+                        arrTime[index - 1]
+                    ) == 1) && (this.compareDate(
+                        arrayTmp[index1].R_DUE_DATE,
+                        arrTime[index + 1]
+                    ) == -1) 
                 ) {
                     valueFirst1 -= Number(arrayTmp[index1].R_QTY);
                     valueFirst2 =
@@ -104,9 +167,9 @@ const app = {
     },
 
     fillChartData: function(arrData) {},
-
-    // init data day of chart
-    initDayData: function() {
+    
+    // get length for init dayData and for initSession
+    getLengthOfDayData: function(){
         const session1 =
             moment()
                 .add(1, "month")
@@ -121,37 +184,78 @@ const app = {
                 .add(1, "month")
                 .format("MM") + "/21";
 
+        const dayTmp = moment().add(1, "month").format("MM/DD");
+        const sessionTmp = moment().format('YYYY') + "/";
+        const arrayTmp = [];
+        arrayTmp.push(session1, session2, session3);
+        
+        if (this.compareDate(dayTmp, session1) == -1) {
+            arrayTmp.push(1);
+            arrayTmp.push(moment(sessionTmp + session1, "YYYY/MM/DD").diff(moment(), 'days') + 1);
+            return arrayTmp;
+        }else if (this.compareDate(dayTmp, session2) == -1) {
+            arrayTmp,push(2);
+            arrayTmp.push(moment(sessionTmp + session2, "YYYY/MM/DD").diff(moment(), 'days') + 1);
+
+            return arrayTmp;
+        }else{
+            arrayTmp.push(3);
+            arrayTmp.push(moment(sessionTmp + session3, "YYYY/MM/DD").diff(moment(), 'days') + 1);
+            
+            return arrayTmp;
+        }
+    },
+
+    initSessionData: function(){
+        const arrTmp = this.getLengthOfDayData();
+        const key = arrTmp[3];
+
+        switch (key) {
+            case 1:
+                this.sessionData.push(arrTmp[0], arrTmp[1], arrTmp[2]);
+                break;
+            case 2:
+                this.sessionData.push(arrTmp[1], arrTmp[2]);
+            default:
+                this.sessionData.push(arrTmp[2])
+                break;
+        }
+    },
+
+    initMonthData : function(){
         const twoMonthAfter =
-            moment()
-                .add(2, "month")
-                .format("MM") + "/01";
+        moment()
+            .add(2, "month")
+            .format("MM") + "/01";
 
         const threeMonthAfter =
             moment()
                 .add(3, "month")
                 .format("MM") + "/01";
 
-        for (let index = 0; index < 31; index++) {
+        this.monthData.push(twoMonthAfter, threeMonthAfter);
+    },
+
+    // init data day of chart
+    initDayData: function() {
+        const arrTmp = this.getLengthOfDayData();
+        const length = Number(arrTmp[4]);
+
+        for (let index = 0; index < length; index++) {
             const day = moment()
                 .add(index, "days")
                 .format("MM/DD");
             this.dayData.push(day);
         }
 
-        if (this.compareDate(session1, this.dayData[30]) != -1) {
-            this.dayData.push(session1);
-        }
+    },
 
-        if (this.compareDate(session2, this.dayData[30]) != -1) {
-            this.dayData.push(session2);
-        }
+    initTimeData: function(){
+        this.initDayData();
+        this.initSessionData();
+        this.initMonthData();
 
-        if (this.compareDate(session3, this.dayData[30]) != -1) {
-            this.dayData.push(session3);
-        }
-
-        this.dayData.push(twoMonthAfter);
-        this.dayData.push(threeMonthAfter);
+        this.timeData = this.dayData.concat(this.sessionData, this.monthData);
     },
 
     // load data of division
@@ -204,7 +308,7 @@ const app = {
                         <p class="card-text">注文数量: <span id="order-${dataPro.ORDER_Prod_No}"> </span></p>
                         <p class="card-text">加工数量: <span id="product-${dataPro.ORDER_Prod_No}"> </span></p>
                         <div class="d-flex">
-                            <button data-toggle="modal" data-target="#modalAddProduct" id="${dataPro.ORDER_Prod_No}" class="btn btn-primary btn-add-product">Button</button>
+                            <button data-toggle="modal" data-target="#modalAddProduct" id="${dataPro.ORDER_Prod_No}" class="btn btn-primary btn-add-product">Add product</button>
                             <button class="btn btn-primary ml-2">Button</button>
                         </div>
                     </div>
@@ -274,7 +378,7 @@ const app = {
 
             const chartName = this.drawChart(
                 firstDataOrderID,
-                this.dayData,
+                this.timeData,
                 dataNow,
                 dataAfterProduct,
                 firstDataOrderID
@@ -355,8 +459,10 @@ const app = {
     start: function() {
         this.handleEvent();
 
-        // init data day for chart
-        this.initDayData();
+        this.initTimeData();
+
+        console.log(this.timeData)
+        console.log(this.dayData)
 
         //render chart
         this.render();
