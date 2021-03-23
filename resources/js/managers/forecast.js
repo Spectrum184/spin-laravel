@@ -1,6 +1,8 @@
 window.axios = require("axios");
 window.moment = require("moment");
 require("chart.js");
+const token = document.head.querySelector('meta[name="csrf-token"]');
+window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
@@ -9,6 +11,7 @@ const btnLoadData = $("#btn-load-data");
 const selected = $("#select-division");
 const productContent = $(".product-content");
 const URL = "http://127.0.0.1:8000/api/";
+const btnForecast = $("#btn-forecast");
 
 const app = {
     data: [],
@@ -21,8 +24,9 @@ const app = {
     timeData: null,
     // data list of chart
     arrChart: [],
-    //
+    // list button add product
     btnAddProd: [],
+    forecastData : [],
 
     //compare to date
     compareDate: function(dateTimeA, dateTimeB) {
@@ -339,7 +343,6 @@ const app = {
                         <p class="card-text">加工数量: <span id="product-${dataPro.ORDER_Prod_No}"> </span></p>
                         <div class="d-flex">
                             <button data-toggle="modal" data-target="#modalAddProduct" id="${dataPro.ORDER_Prod_No}" class="btn btn-primary btn-add-product">Add product</button>
-                            <button class="btn btn-primary ml-2">Button</button>
                         </div>
                     </div>
                 </div>
@@ -370,7 +373,7 @@ const app = {
             const response = await _this.loadData(selectedValue);
 
             _this.orderData = response.data;
-            console.log(_this.orderData);
+            //console.log(_this.orderData);
 
             //render data of the product
             await _this.render(_this.orderData);
@@ -381,6 +384,14 @@ const app = {
             _this.btnAddProd = $$(".btn-add-product");
             _this.bindActionForButton(_this.btnAddProd);
         };
+
+        btnForecast.onclick = function(){
+            axios.post(URL + "manager/mitsubishi-forecast/forecast", _this.forecastData).then((response)=>{
+                console.log(response.data)
+            }).catch((error)=>{
+                console.log(error.response.data)
+            });
+        }
     },
 
     bindActionForButton: function(listButton) {
@@ -399,6 +410,7 @@ const app = {
             };
         });
     },
+
     drawAllChart: function(arrData) {
         arrData.forEach(data => {
             const firstData = data[0];
@@ -429,12 +441,14 @@ const app = {
     // draw one chart
     drawChart: function(
         idChart,
-        dayData,
+        timeData,
         dataNow,
         dataAfterProduct,
         chartName
     ) {
         const ctx = document.getElementById(idChart).getContext("2d");
+
+        this.forecastData.push({Prod_No: chartName, qty: dataNow[this.dayData.length]});
 
         return (chartName = new Chart(ctx, {
             // The type of chart we want to create
@@ -442,7 +456,7 @@ const app = {
 
             // The data for our dataset
             data: {
-                labels: dayData,
+                labels: timeData,
                 datasets: [
                     {
                         label: "Now",
@@ -465,6 +479,27 @@ const app = {
                 tooltips: {
                     mode: "index",
                     intersect: false
+                },
+                elements:{
+                    line:{
+                        tension: 0,
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                       
+                        
+                    }],
+                    yAxes: [{
+                        display:true,
+                        gridLines:{
+                            zeroLineColor: 'black',
+                        },
+                        ticks: {
+                            precision: 0,
+                            beginAtZero: true,
+                        }
+                    }],
                 }
             }
         }));
@@ -492,7 +527,7 @@ const app = {
 
         this.initTimeData();
 
-        console.log(this.timeData);
+        //console.log(this.timeData);
 
         //render chart
         this.render();

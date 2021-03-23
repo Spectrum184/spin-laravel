@@ -1,0 +1,2 @@
+# get component info
+- 

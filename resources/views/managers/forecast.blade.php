@@ -29,6 +29,9 @@
     </div>
     <div class="col-3"></div>
 </div>
+<div class="row justify-content-center mt-3">
+    <button id="btn-forecast" class="btn btn-primary">Forecast</button>
+</div>
 <div class="product-content"></div>
 
 <!-- Modal -->

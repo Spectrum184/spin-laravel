@@ -38,6 +38,18 @@ class ForecastController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function returnForecastData(Request $request)
+    {
+        $data = $request->all();
+
+        return response()->json($data);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response

@@ -67,4 +67,13 @@ class Forecast extends Model
 
         return $cleanData;
     }
+
+    /**
+     * process forecast
+     */
+
+    public function forecastProduct($data)
+    {
+        # code...
+    }
 }
