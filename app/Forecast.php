@@ -4,12 +4,16 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class Forecast extends Model
 {
     use Notifiable;
+    protected $component;
+
+    public function __construct(Component $component ) {
+        $this->component = $component;
+    }
     /**
      * The attributes that are mass assignable.
      *
@@ -74,6 +78,31 @@ class Forecast extends Model
 
     public function forecastProduct($data)
     {
-        # code...
+        $tmp = collect($data)->filter(function ($value)
+        {
+            return (double)$value['qty'] < 0;
+        })->all();
+
+        $products = $this->initDataForecast($tmp);
+
+        return $products;
     }
+
+    /**
+     * init data for data forecast
+     */
+
+     public function initDataForecast($data)
+     {
+        $arrData = array();
+
+         foreach ($data as $d) {
+             $pro_no = $d['Prod_No'];
+            $dataTmp = $this->component->getDataComponent($pro_no);
+
+            array_push($arrData, [$pro_no, $dataTmp]);
+         }
+
+         return $arrData;
+     }
 }

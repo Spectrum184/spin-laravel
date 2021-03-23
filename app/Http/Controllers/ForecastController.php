@@ -46,7 +46,9 @@ class ForecastController extends Controller
     {
         $data = $request->all();
 
-        return response()->json($data);
+        $products = $this->forecast->forecastProduct($data);
+
+        return response()->json($products);
     }
 
     /**
