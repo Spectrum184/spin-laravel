@@ -1,5 +1,5 @@
 <div align="center">
-<h1>Spin App </h1>
+<h1 style="color:#ff79c6" >Spin App </h1>
   <br>
   <br>
   <br>
@@ -9,7 +9,7 @@
   </a>
   <br>
   </p>
-  <p>Oh shit! What a bug!</p>
+  <p style="color:#50fa7b">Oh shit! What a bug!</p>
 <img alt="GIF" src="https://media.giphy.com/media/hrSFdM4rg8VFpXyz2m/giphy.gif" />
 
   <br>
