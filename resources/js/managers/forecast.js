@@ -27,6 +27,7 @@ const app = {
     // list button add product
     btnAddProd: [],
     forecastData : [],
+    forecastDataResponce: [],
 
     //compare to date
     compareDate: function(dateTimeA, dateTimeB) {
@@ -301,7 +302,7 @@ const app = {
 
             return response;
         } catch (error) {
-            return error;
+            alert("Error: " + error.data);
         }
     },
     // render chart
@@ -329,7 +330,7 @@ const app = {
                 <div class="card border-0 w-100 h-100">
                     <div class="card-body">
                         <h5 class="card-title border-bottom">Chart</h5>
-                        <canvas class="w-100" id="${dataPro.ORDER_Prod_No}"></canvas>
+                        <canvas class="w-100" id="canvas-${dataPro.ORDER_Prod_No}"></canvas>
                     </div>
                 </div>
             </div>
@@ -351,8 +352,9 @@ const app = {
                 <div class="card border-0 w-100 h-100">
                     <div class="card-body">
                         <h5 class="card-title border-bottom">Recommendation</h5>
-                        <p class="card-text">進めの日にち: </p>
-                        <p class="card-text">進めの加工数量: </p>
+                        <p class="card-text" >進めの日にち: <span id="recommend-day-${dataPro.ORDER_Prod_No}"></span></p>
+                        <p class="card-text">進めの加工数量: <span id="recommend-qty-${dataPro.ORDER_Prod_No}"></span></p>
+                        <ul id="recommend-component-${dataPro.ORDER_Prod_No} list-group"></ul>
                     </div>
                 </div>
             </div>
@@ -360,6 +362,44 @@ const app = {
         });
 
         productContent.innerHTML = htmls.join("");
+    },
+
+    bindRecommendData: function (id, componentInfo, date, qty) {
+        const recommendDate = $("#recommend-day-" + id);
+        const recommendQty = $("#recommend-qty-" +id);
+        const recommendComponent = $("#recommend-component-" + id);
+
+        recommendDate.innerText = date;
+        recommendQty.innerText = qty;
+        recommendComponent.innerHTML = componentInfo;
+    },
+
+    // render recommendation  
+    renderRecommend: function (recommendData) {
+        recommendData.forEach(data => {
+            const id = data[0];
+            const arrComponent = data[1];
+            const date = data[2];
+            const qty = data[3];
+            let componentInfo = "";
+
+            if (arrComponent.length > 0) {
+               arrComponent.forEach(component => {
+                    componentInfo += `
+                    <li class="list-group-item">Product number: ${component[0]}</li>
+                    <li class="list-group-item">Quantity: ${Math.abs(component[3])}</li>
+                    <li class="list-group-item">Process name: ${component[4]} </li>
+                    `;
+                })
+            }else{
+                componentInfo = `<li class="list-group-item">No component</li>`;
+            }
+             console.log(arrComponent)
+             console.log(componentInfo)
+
+            //this.bindRecommendData(id, componentInfo, date, qty);
+
+        })
     },
 
     // handle event
@@ -385,12 +425,23 @@ const app = {
             _this.bindActionForButton(_this.btnAddProd);
         };
 
-        btnForecast.onclick = function(){
-            axios.post(URL + "manager/mitsubishi-forecast/forecast", _this.forecastData).then((response)=>{
-                console.log(response.data)
-            }).catch((error)=>{
-                console.log(error.response.data)
-            });
+        btnForecast.onclick = async function(){
+           const response = await _this.loadDataForecast(_this.forecastData);
+           _this.forecastDataResponce = response.data;
+
+            _this.renderRecommend(_this.forecastDataResponce);
+        }
+    },
+
+    loadDataForecast: async function (data) {
+        try {
+            const response = await axios.post(
+                URL + "manager/mitsubishi-forecast/forecast", data
+            );
+
+            return response;
+        } catch (error) {
+            alert("Error: " + error.data);
         }
     },
 
@@ -446,9 +497,9 @@ const app = {
         dataAfterProduct,
         chartName
     ) {
-        const ctx = document.getElementById(idChart).getContext("2d");
+        const ctx = document.getElementById('canvas-' + idChart).getContext("2d");
 
-        this.forecastData.push({Prod_No: chartName, qty: dataNow[this.dayData.length]});
+        this.forecastData.push({Prod_No: chartName, qty: dataNow[this.dayData.length], day: this.timeData[this.dayData.length - 1]});
 
         return (chartName = new Chart(ctx, {
             // The type of chart we want to create
@@ -510,7 +561,7 @@ const app = {
         const dayID = "#day-" + ID1;
         const orderID = "#order-" + ID2;
         const productID = "#product-" + ID3;
-        $("#" + chartId).onclick = function(evt) {
+        $("#canvas-" + chartId).onclick = function(evt) {
             const activeX = chart.getElementsAtXAxis(evt);
             const clickedX = activeX[0]["_index"];
             const labelDay = chart.data.labels[clickedX];

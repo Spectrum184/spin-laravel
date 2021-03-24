@@ -10,9 +10,11 @@ class Forecast extends Model
 {
     use Notifiable;
     protected $component;
+    protected $productProcess;
 
-    public function __construct(Component $component ) {
+    public function __construct(Component $component, ProductProcess $productProcess ) {
         $this->component = $component;
+        $this->productProcess = $productProcess;
     }
     /**
      * The attributes that are mass assignable.
@@ -75,7 +77,6 @@ class Forecast extends Model
     /**
      * process forecast
      */
-
     public function forecastProduct($data)
     {
         $tmp = collect($data)->filter(function ($value)
@@ -91,18 +92,24 @@ class Forecast extends Model
     /**
      * init data for data forecast
      */
-
      public function initDataForecast($data)
      {
         $arrData = array();
 
          foreach ($data as $d) {
-             $pro_no = $d['Prod_No'];
-            $dataTmp = $this->component->getDataComponent($pro_no);
+            $pro_no = $d['Prod_No'];
+            $qty = $d['qty'];
+            $date = $d['day'];
 
-            array_push($arrData, [$pro_no, $dataTmp]);
+            if ($qty < 0) {
+                $dataTmp = $this->component->getDataComponent($pro_no, $qty);
+                $day = $this->productProcess->getTimeProduct($pro_no, $date);
+
+                array_push($arrData, [$pro_no, $dataTmp, $day, $qty]);
+            }
          }
 
          return $arrData;
      }
+    
 }
