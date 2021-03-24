@@ -12,7 +12,8 @@ class Forecast extends Model
     protected $component;
     protected $productProcess;
 
-    public function __construct(Component $component, ProductProcess $productProcess ) {
+    public function __construct(Component $component, ProductProcess $productProcess)
+    {
         $this->component = $component;
         $this->productProcess = $productProcess;
     }
@@ -79,9 +80,8 @@ class Forecast extends Model
      */
     public function forecastProduct($data)
     {
-        $tmp = collect($data)->filter(function ($value)
-        {
-            return (double)$value['qty'] < 0;
+        $tmp = collect($data)->filter(function ($value) {
+            return (float)$value['qty'] < 0;
         })->all();
 
         $products = $this->initDataForecast($tmp);
@@ -92,11 +92,11 @@ class Forecast extends Model
     /**
      * init data for data forecast
      */
-     public function initDataForecast($data)
-     {
+    public function initDataForecast($data)
+    {
         $arrData = array();
 
-         foreach ($data as $d) {
+        foreach ($data as $d) {
             $pro_no = $d['Prod_No'];
             $qty = $d['qty'];
             $date = $d['day'];
@@ -107,9 +107,8 @@ class Forecast extends Model
 
                 array_push($arrData, [$pro_no, $dataTmp, $day, $qty]);
             }
-         }
+        }
 
-         return $arrData;
-     }
-    
+        return $arrData;
+    }
 }

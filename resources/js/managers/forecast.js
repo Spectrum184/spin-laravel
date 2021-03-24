@@ -2,7 +2,7 @@ window.axios = require("axios");
 window.moment = require("moment");
 require("chart.js");
 const token = document.head.querySelector('meta[name="csrf-token"]');
-window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+window.axios.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
@@ -26,8 +26,8 @@ const app = {
     arrChart: [],
     // list button add product
     btnAddProd: [],
-    forecastData : [],
-    forecastDataResponce: [],
+    forecastData: [],
+    forecastDataResponse: [],
 
     //compare to date
     compareDate: function(dateTimeA, dateTimeB) {
@@ -354,7 +354,7 @@ const app = {
                         <h5 class="card-title border-bottom">Recommendation</h5>
                         <p class="card-text" >進めの日にち: <span id="recommend-day-${dataPro.ORDER_Prod_No}"></span></p>
                         <p class="card-text">進めの加工数量: <span id="recommend-qty-${dataPro.ORDER_Prod_No}"></span></p>
-                        <ul id="recommend-component-${dataPro.ORDER_Prod_No} list-group"></ul>
+                        <div id="recommend-component-${dataPro.ORDER_Prod_No}"></div>
                     </div>
                 </div>
             </div>
@@ -364,9 +364,9 @@ const app = {
         productContent.innerHTML = htmls.join("");
     },
 
-    bindRecommendData: function (id, componentInfo, date, qty) {
+    bindRecommendData: function(id, componentInfo, date, qty) {
         const recommendDate = $("#recommend-day-" + id);
-        const recommendQty = $("#recommend-qty-" +id);
+        const recommendQty = $("#recommend-qty-" + id);
         const recommendComponent = $("#recommend-component-" + id);
 
         recommendDate.innerText = date;
@@ -374,8 +374,8 @@ const app = {
         recommendComponent.innerHTML = componentInfo;
     },
 
-    // render recommendation  
-    renderRecommend: function (recommendData) {
+    // render recommendation
+    renderRecommend: function(recommendData) {
         recommendData.forEach(data => {
             const id = data[0];
             const arrComponent = data[1];
@@ -384,22 +384,19 @@ const app = {
             let componentInfo = "";
 
             if (arrComponent.length > 0) {
-               arrComponent.forEach(component => {
+                arrComponent.forEach(component => {
                     componentInfo += `
-                    <li class="list-group-item">Product number: ${component[0]}</li>
-                    <li class="list-group-item">Quantity: ${Math.abs(component[3])}</li>
-                    <li class="list-group-item">Process name: ${component[4]} </li>
+                    <p>Product number: ${component[0]}</p>
+                    <p>Quantity: ${Math.abs(component[3])}</p>
+                    <p>Process name: ${component[4]} </p>
                     `;
-                })
-            }else{
-                componentInfo = `<li class="list-group-item">No component</li>`;
+                });
+            } else {
+                componentInfo = `<p>No component</p>`;
             }
-             console.log(arrComponent)
-             console.log(componentInfo)
 
-            //this.bindRecommendData(id, componentInfo, date, qty);
-
-        })
+            this.bindRecommendData(id, componentInfo, date, qty);
+        });
     },
 
     // handle event
@@ -425,18 +422,19 @@ const app = {
             _this.bindActionForButton(_this.btnAddProd);
         };
 
-        btnForecast.onclick = async function(){
-           const response = await _this.loadDataForecast(_this.forecastData);
-           _this.forecastDataResponce = response.data;
+        btnForecast.onclick = async function() {
+            const response = await _this.loadDataForecast(_this.forecastData);
+            _this.forecastDataResponse = response.data;
 
-            _this.renderRecommend(_this.forecastDataResponce);
-        }
+            _this.renderRecommend(_this.forecastDataResponse);
+        };
     },
 
-    loadDataForecast: async function (data) {
+    loadDataForecast: async function(data) {
         try {
             const response = await axios.post(
-                URL + "manager/mitsubishi-forecast/forecast", data
+                URL + "manager/mitsubishi-forecast/forecast",
+                data
             );
 
             return response;
@@ -497,9 +495,15 @@ const app = {
         dataAfterProduct,
         chartName
     ) {
-        const ctx = document.getElementById('canvas-' + idChart).getContext("2d");
+        const ctx = document
+            .getElementById("canvas-" + idChart)
+            .getContext("2d");
 
-        this.forecastData.push({Prod_No: chartName, qty: dataNow[this.dayData.length], day: this.timeData[this.dayData.length - 1]});
+        this.forecastData.push({
+            Prod_No: chartName,
+            qty: dataNow[this.dayData.length],
+            day: this.timeData[this.dayData.length - 1]
+        });
 
         return (chartName = new Chart(ctx, {
             // The type of chart we want to create
@@ -531,26 +535,25 @@ const app = {
                     mode: "index",
                     intersect: false
                 },
-                elements:{
-                    line:{
-                        tension: 0,
+                elements: {
+                    line: {
+                        tension: 0
                     }
                 },
                 scales: {
-                    yAxes: [{
-                       
-                        
-                    }],
-                    yAxes: [{
-                        display:true,
-                        gridLines:{
-                            zeroLineColor: 'black',
-                        },
-                        ticks: {
-                            precision: 0,
-                            beginAtZero: true,
+                    yAxes: [{}],
+                    yAxes: [
+                        {
+                            display: true,
+                            gridLines: {
+                                zeroLineColor: "black"
+                            },
+                            ticks: {
+                                precision: 0,
+                                beginAtZero: true
+                            }
                         }
-                    }],
+                    ]
                 }
             }
         }));

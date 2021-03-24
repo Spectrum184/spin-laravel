@@ -19,12 +19,12 @@ class ProductProcess extends Model
 
         foreach ($data as $d) {
             $proc_no = $d->Proc_No;
-            $l_time = ((double)$d->L_Time) == 0 ? 3 : ((double)$d->L_Time); 
+            $l_time = ((float)$d->L_Time) == 0 ? 3 : ((float)$d->L_Time);
             $dayTmp += $proc_no * $l_time;
         }
 
         $numOfDay = Carbon::parse($date)->subDay($dayTmp)->format('m/d');
-        
+
         return $numOfDay;
     }
 }
