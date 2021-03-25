@@ -70,7 +70,6 @@ const app = {
                 arrTmp.push(month + "/10", month + "/20", lastDayOfMonth);
                 break;
         }
-
         return arrTmp;
     },
 
@@ -110,6 +109,8 @@ const app = {
 
         let arrTime = null;
         arrTime = this.dayData.concat(arrSession, arrMonth);
+
+        console.log(arrTime);
 
         // calculate first value of chart data
         arrData.forEach(data => {
@@ -370,7 +371,7 @@ const app = {
         const recommendComponent = $("#recommend-component-" + id);
 
         recommendDate.innerText = date;
-        recommendQty.innerText = qty;
+        recommendQty.innerText = Math.abs(qty);
         recommendComponent.innerHTML = componentInfo;
     },
 
@@ -380,7 +381,7 @@ const app = {
             const id = data[0];
             const arrComponent = data[1];
             const date = data[2];
-            const qty = data[3];
+            const qty = Math.abs(data[3]);
             let componentInfo = "";
 
             if (arrComponent.length > 0) {
@@ -427,6 +428,8 @@ const app = {
             _this.forecastDataResponse = response.data;
 
             _this.renderRecommend(_this.forecastDataResponse);
+
+            _this.forecastData = [];
         };
     },
 

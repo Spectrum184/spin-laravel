@@ -30,6 +30,7 @@ Route::prefix('export')->group(function () {
 Route::prefix('manager')->group(function () {
     Route::get('/', 'HelloController@hello')->name('manager');
     Route::get('/mitsubishi-forecast', 'ForecastController@index')->name('mftbc.forecast.index');
+    Route::get('drawing/search', 'DrawingController@findDrawingByProNo')->name('drawing.search');
 });
 
 Auth::routes();

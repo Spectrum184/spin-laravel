@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -11,11 +12,14 @@ class Forecast extends Model
     use Notifiable;
     protected $component;
     protected $productProcess;
+    protected $calendar;
+    protected $connection = 'mysql';
 
-    public function __construct(Component $component, ProductProcess $productProcess)
+    public function __construct(Component $component, ProductProcess $productProcess, Calendar $calendar)
     {
         $this->component = $component;
         $this->productProcess = $productProcess;
+        $this->calendar = $calendar;
     }
     /**
      * The attributes that are mass assignable.
@@ -95,17 +99,33 @@ class Forecast extends Model
     public function initDataForecast($data)
     {
         $arrData = array();
+        $day = 0;
+        $numDayTmp = 0;
+        $numDay = 0;
 
         foreach ($data as $d) {
             $pro_no = $d['Prod_No'];
             $qty = $d['qty'];
-            $date = $d['day'];
 
             if ($qty < 0) {
                 $dataTmp = $this->component->getDataComponent($pro_no, $qty);
-                $day = $this->productProcess->getTimeProduct($pro_no, $date);
+                $dayProductComponent = $this->component->getComponentTime($dataTmp);
+                $dayProduction = $this->productProcess->getTimeProduct($pro_no);
+                
+                $day = $dayProductComponent + $dayProduction;
+                $numDayTmp =  $this->calendar->checkWeekendDay($day);
+                
+                $numDay = $day + $numDayTmp;
 
-                array_push($arrData, [$pro_no, $dataTmp, $day, $qty]);
+                $date = Carbon::now()->addDay($numDay);
+
+                // add day if date is weekend
+                while ($date->isWeekend()) {
+                    $date = $date->addDay(1);
+                }
+                $date = $date->format('m-d');
+
+                array_push($arrData, [$pro_no, $dataTmp, $date, $qty, $day]);
             }
         }
 

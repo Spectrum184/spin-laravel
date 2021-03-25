@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
@@ -11,20 +11,19 @@ class ProductProcess extends Model
 {
     use Notifiable;
     protected $table = 'prod_process_master';
+    protected $connection = 'mysql';
 
-    public function getTimeProduct($pro_no, $date)
+    public function getTimeProduct($pro_no)
     {
         $dayTmp = 0;
-        $data = DB::table('prod_process_master')->select('Proc_No', 'L_Time')->where('Parts_No', '=', $pro_no)->get();
+        $data = DB::table('prod_process_master')->select('L_Time')->where('Parts_No', '=', $pro_no)->get();
 
+        // L_Time in database default is 0
         foreach ($data as $d) {
-            $proc_no = $d->Proc_No;
             $l_time = ((float)$d->L_Time) == 0 ? 3 : ((float)$d->L_Time);
-            $dayTmp += $proc_no * $l_time;
+            $dayTmp += $l_time;
         }
 
-        $numOfDay = Carbon::parse($date)->subDay($dayTmp)->format('m/d');
-
-        return $numOfDay;
+        return $dayTmp;
     }
 }

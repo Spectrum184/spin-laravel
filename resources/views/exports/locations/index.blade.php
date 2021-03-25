@@ -23,6 +23,8 @@
         </div>
     </div>
     <div class="col-4"></div>
+</div>
+<div class="row">
     @isset($locations)
     <table class="table table-bordered mt-3">
         <thead>

@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,12 @@ class Component extends Model
 {
     use Notifiable;
     protected $table = 'component_master';
+    protected $productProcess;
+    protected $connection = 'mysql';
+
+    public function __construct(ProductProcess $productProcess) {
+        $this->productProcess = $productProcess;
+    }
 
     /**
      * find component for product
@@ -51,5 +58,27 @@ class Component extends Model
         }
 
         return $arrTmp;
+    }
+
+    /**
+     * get component product time
+     */
+    public function getComponentTime($arrComponent)
+    {
+        $day = 0;
+        $arrTime = array();
+
+        foreach ($arrComponent as $component) {
+            $tmp = 0;
+            $part_no = $component[0];
+            $date = Carbon::now();
+
+           $tmp +=  $this->productProcess->getTimeProduct($part_no, $date);
+           array_push($arrTime, $tmp);
+        }
+
+        $day = collect($arrTime)->max();
+
+        return $day;
     }
 }

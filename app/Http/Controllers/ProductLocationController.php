@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductLocation as RequestsProductLocation;
-use App\ProductLocation;
+use App\Models\ProductLocation;
 use Illuminate\Http\Request;
 
 use function PHPUnit\Framework\isEmpty;
@@ -11,6 +11,7 @@ use function PHPUnit\Framework\isEmpty;
 class ProductLocationController extends Controller
 {
     protected $productLocation;
+    protected $connection = 'mysql';
 
     public function __construct(ProductLocation $productLocation)
     {

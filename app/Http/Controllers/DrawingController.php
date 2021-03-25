@@ -2,17 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Forecast;
+use App\Models\Drawing;
 use Illuminate\Http\Request;
 
-class ForecastController extends Controller
+class DrawingController extends Controller
 {
-    protected $forecast;
+    protected $drawing;
 
-    public function __construct(Forecast $forecast)
-    {
-        $this->forecast = $forecast;
+    public function __construct(Drawing $drawing) {
+        $this->drawing = $drawing;
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function findDrawingByProNo(Request $request)
+    {
+        return view('managers.drawing');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,35 +31,7 @@ class ForecastController extends Controller
      */
     public function index()
     {
-        return view('managers.forecast');
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function returnData(Request $request)
-    {
-        $division = $request->get('division');
-
-        $data = $this->forecast->filterData($division);
-
-        return response()->json($data);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function returnForecastData(Request $request)
-    {
-        $data = $request->all();
-
-        $products = $this->forecast->forecastProduct($data);
-
-        return response()->json($products);
+        //
     }
 
     /**
