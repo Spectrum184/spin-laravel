@@ -23,14 +23,18 @@ Route::get('/', function () {
 // product manager routes
 Route::prefix('export')->group(function () {
     Route::get('/', 'HelloController@hello')->name('export');
+    // route for locations control
     Route::get('locations/search', 'ProductLocationController@search')->name('locations.search');
     Route::resource('locations', 'ProductLocationController');
 });
 
 Route::prefix('manager')->group(function () {
     Route::get('/', 'HelloController@hello')->name('manager');
+    // route to get forecast
     Route::get('/mitsubishi-forecast', 'ForecastController@index')->name('mftbc.forecast.index');
-    Route::get('drawing/search', 'DrawingController@findDrawingByProNo')->name('drawing.search');
+    // route for drawing search
+    Route::get('drawing/search', 'DrawingController@findDrawing')->name('drawing.search');
+    Route::get('drawing', 'DrawingController@index')->name('drawing.index');
 });
 
 Auth::routes();

@@ -111,10 +111,10 @@ class Forecast extends Model
                 $dataTmp = $this->component->getDataComponent($pro_no, $qty);
                 $dayProductComponent = $this->component->getComponentTime($dataTmp);
                 $dayProduction = $this->productProcess->getTimeProduct($pro_no);
-                
+
                 $day = $dayProductComponent + $dayProduction;
                 $numDayTmp =  $this->calendar->checkWeekendDay($day);
-                
+
                 $numDay = $day + $numDayTmp;
 
                 $date = Carbon::now()->addDay($numDay);

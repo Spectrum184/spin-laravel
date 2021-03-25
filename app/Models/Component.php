@@ -14,7 +14,8 @@ class Component extends Model
     protected $productProcess;
     protected $connection = 'mysql';
 
-    public function __construct(ProductProcess $productProcess) {
+    public function __construct(ProductProcess $productProcess)
+    {
         $this->productProcess = $productProcess;
     }
 
@@ -73,8 +74,8 @@ class Component extends Model
             $part_no = $component[0];
             $date = Carbon::now();
 
-           $tmp +=  $this->productProcess->getTimeProduct($part_no, $date);
-           array_push($arrTime, $tmp);
+            $tmp +=  $this->productProcess->getTimeProduct($part_no, $date);
+            array_push($arrTime, $tmp);
         }
 
         $day = collect($arrTime)->max();

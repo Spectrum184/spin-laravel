@@ -9,7 +9,8 @@ class DrawingController extends Controller
 {
     protected $drawing;
 
-    public function __construct(Drawing $drawing) {
+    public function __construct(Drawing $drawing)
+    {
         $this->drawing = $drawing;
     }
 
@@ -19,9 +20,13 @@ class DrawingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function findDrawingByProNo(Request $request)
+    public function findDrawing(Request $request)
     {
-        return view('managers.drawing');
+        $pro_no = trim($request->get('pro_no'), " ");
+
+        $drawing = $this->drawing->findDrawingByProNo($pro_no);
+
+        return view('managers.drawing', ['drawing' => $drawing, 'path' => '//ZUMENSERVER-HP/document/']);
     }
 
     /**
@@ -31,7 +36,7 @@ class DrawingController extends Controller
      */
     public function index()
     {
-        //
+        return view('managers.drawing');
     }
 
     /**

@@ -22,11 +22,10 @@ class Calendar extends Model
         $day_end = Carbon::now()->addDay($day);
 
         // get number of day is weekend
-        $numDay = $day_start->diffInDaysFiltered(function(Carbon $date) {
+        $numDay = $day_start->diffInDaysFiltered(function (Carbon $date) {
             return $date->isWeekend();
         }, $day_end);
 
         return $numDay;
     }
-
 }
