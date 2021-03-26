@@ -53,14 +53,14 @@
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-default">Date</span>
+                        <span class="input-group-text" id="plan-deadline-date">Date</span>
                     </div>
                     <input type="text" class="form-control" aria-label="Default"
                         aria-describedby="inputGroup-sizing-default" id="input-date">
                 </div>
                 <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-default">Quantity</span>
+                    <div class="input-group-prepend" id="plan-quantity">
+                        <span class="input-group-text">Quantity</span>
                     </div>
                     <input type="text" class="form-control" aria-label="Default"
                         aria-describedby="inputGroup-sizing-default" id="input-qty">
@@ -68,7 +68,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-primary" id="btn-create-plan">Save</button>
             </div>
         </div>
     </div>

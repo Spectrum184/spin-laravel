@@ -13,13 +13,15 @@ class Forecast extends Model
     protected $component;
     protected $productProcess;
     protected $calendar;
+    protected $productPlan;
     protected $connection = 'mysql';
 
-    public function __construct(Component $component, ProductProcess $productProcess, Calendar $calendar)
+    public function __construct(Component $component, ProductProcess $productProcess, Calendar $calendar, ProductPlan $productPlan)
     {
         $this->component = $component;
         $this->productProcess = $productProcess;
         $this->calendar = $calendar;
+        $this->productPlan = $productPlan;
     }
     /**
      * The attributes that are mass assignable.
@@ -130,5 +132,12 @@ class Forecast extends Model
         }
 
         return $arrData;
+    }
+
+    public function createPlan($data)
+    {
+        $counter = $this->productPlan->getCounter();
+
+        return $counter;
     }
 }

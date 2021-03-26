@@ -52,6 +52,25 @@ class ForecastController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function createPlan(Request $request)
+    {
+        $productNumber = $request->productNumber;
+        $quantity = $request->quantity;
+        $datePlan = $request->datePlan;
+        $data=[$productNumber,$quantity,$datePlan];
+        
+        $counter = $this->forecast->createPlan($data);
+
+        return response()->json($counter);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response

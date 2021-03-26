@@ -12,6 +12,7 @@ const selected = $("#select-division");
 const productContent = $(".product-content");
 const URL = "http://127.0.0.1:8000/api/";
 const btnForecast = $("#btn-forecast");
+const btnCreatePlan = $('#btn-create-plan');
 
 const app = {
     data: [],
@@ -37,7 +38,7 @@ const app = {
         } else {
             dateATmp = dateTimeA;
         }
-
+        
         const momentA = moment(dateATmp, "MM-DD");
         const momentB = moment(dateTimeB, "MM/DD");
         if (momentA > momentB) return 1;
@@ -110,7 +111,7 @@ const app = {
         let arrTime = null;
         arrTime = this.dayData.concat(arrSession, arrMonth);
 
-        console.log(arrTime);
+       //console.log(arrTime);
 
         // calculate first value of chart data
         arrData.forEach(data => {
@@ -153,33 +154,34 @@ const app = {
             dataNow[index] = valueFirst1;
             dataAfterProduct[index] = valueFirst2;
         }
-
+        
+        
         for (index; index < arrTime.length; index++) {
             for (let index1 = 0; index1 < lengthOfDataTmp; index1++) {
                 if (
-                    this.compareDate(
+                    (this.compareDate(
                         arrayTmp[index1].R_DUE_DATE,
                         arrTime[index - 1]
-                    ) == 1 &&
-                    this.compareDate(
+                    ) == 1) &&
+                    (this.compareDate(
                         arrayTmp[index1].R_DUE_DATE,
-                        arrTime[index + 1]
-                    ) == -1
+                        arrTime[index]
+                    ) != 1)
                 ) {
                     valueFirst1 -= Number(arrayTmp[index1].R_QTY);
                     valueFirst2 =
                         valueFirst2 +
                         Number(arrayTmp[index1].P_QTY) -
                         Math.abs(Number(arrayTmp[index1].R_QTY));
-
-                    break;
+                    
                 }
+                
             }
 
             dataNow[index] = valueFirst1;
             dataAfterProduct[index] = valueFirst2;
         }
-
+        
         arrDataChart.push(dataNow);
         arrDataChart.push(dataAfterProduct);
 
@@ -423,6 +425,7 @@ const app = {
             _this.bindActionForButton(_this.btnAddProd);
         };
 
+        // forecast process
         btnForecast.onclick = async function() {
             const response = await _this.loadDataForecast(_this.forecastData);
             _this.forecastDataResponse = response.data;
@@ -431,6 +434,25 @@ const app = {
 
             _this.forecastData = [];
         };
+
+        // create plan process
+        btnCreatePlan.onclick = function () {
+            const datePlan = $('#input-date').value;
+            const productNumber = $('#addProductTitle').innerText;
+            const quantity = $('#input-qty').value;
+
+            axios.post( URL + "manager/mitsubishi-forecast/create-plan", {
+                datePlan: datePlan,
+                productNumber: productNumber,
+                quantity: quantity
+              })
+              .then(function (response) {
+                console.log(response);
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+        }
     },
 
     loadDataForecast: async function(data) {
