@@ -82,7 +82,7 @@ class ProductLocationController extends Controller
      */
     public function edit($id)
     {
-        $location = $this->productLocation::find($id);
+        $location = $this->productLocation->findLocationById($id);
 
         return view('exports.locations.edit', ['location' => $location]);
     }
@@ -96,7 +96,7 @@ class ProductLocationController extends Controller
      */
     public function update(RequestsProductLocation $request, $id)
     {
-        $location = $this->productLocation::find($id);
+        $location = $this->productLocation->findLocationById($id);
         $location->update($request->all());
 
         return redirect('export/locations/search?pro_no=' . $location->pro_no)->with('message', 'Updated location');
@@ -110,9 +110,8 @@ class ProductLocationController extends Controller
      */
     public function destroy($id)
     {
-        $post = $this->productLocation::find($id);
-        $post->delete();
+        $message = $this->productLocation->deleteLocation($id);
 
-        return redirect('export/locations')->with('message', 'Deleted');
+        return redirect('export/locations')->with('message', $message);
     }
 }

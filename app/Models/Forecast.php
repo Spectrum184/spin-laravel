@@ -136,7 +136,10 @@ class Forecast extends Model
 
     public function createPlan($data)
     {
-        $counter = $this->productPlan->getCounter();
+        $productNo = $data[0];
+        $quantity = $data[1];
+        $date = $data[2];
+        $counter = $this->productPlan->createPlan($productNo, $quantity, $date);
 
         return $counter;
     }

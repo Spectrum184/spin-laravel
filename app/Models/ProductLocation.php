@@ -23,9 +23,21 @@ class ProductLocation extends Model
 
     public function findByProNo($pro_no)
     {
-        $pro_no_tmp = $pro_no;
-        $locations = DB::table('product_location')->where('Pro_No', 'like', '%' . $pro_no_tmp . '%')->get();
+        $locations = DB::table('product_location')->where('Pro_No', 'like', '%' . $pro_no . '%')->get();
 
         return $locations;
+    }
+    
+    public function findLocationById($id)
+    {
+        $location = ProductLocation::find($id);
+
+        return $location;
+    }
+
+    public function deleteLocation($id)
+    {
+        $location = ProductLocation::find($id);
+        $location->delete();
     }
 }

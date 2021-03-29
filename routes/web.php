@@ -25,6 +25,7 @@ Route::prefix('export')->group(function () {
     Route::get('/', 'HelloController@hello')->name('export');
     // route for locations control
     Route::get('locations/search', 'ProductLocationController@search')->name('locations.search');
+    Route::get('/product_confirm', 'ProductConfirmController@index')->name('productConfirm.index');
     Route::resource('locations', 'ProductLocationController');
 });
 

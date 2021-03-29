@@ -1,6 +1,6 @@
 @extends('layouts.export')
 
-@section('title', 'Location Manager')
+@section('title', 'ロケーション検索')
 
 @section('content')
 @if(session('message'))
@@ -10,16 +10,16 @@
 @endif
 <div class="row">
     <div class="col-12 mb-3 d-flex justify-content-center">
-        <h3>Product Location Manager</h3>
+        <h3>ロケーション管理</h3>
     </div>
     <div class="col-4"></div>
     <div class="col-4">
         <form action="{{ route('locations.search') }}" method="GET" class="d-flex justify-content-center">
-            @component('components.search', ['title'=>'Barcode','nameInput'=>'pro_no'])
+            @component('components.search', ['title'=>'製品番号','nameInput'=>'pro_no'])
             @endcomponent
         </form>
         <div class="d-flex justify-content-center mt-2">
-            <a href="{{ route('locations.create') }}" class="btn btn-primary">Add Location</a>
+            <a href="{{ route('locations.create') }}" class="btn btn-primary">新しいロケーション</a>
         </div>
     </div>
     <div class="col-4"></div>
@@ -29,15 +29,15 @@
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
-                <th scope="col">Pro No</th>
-                <th scope="col">Building No</th>
-                <th scope="col">Floor No</th>
-                <th scope="col">Row</th>
-                <th scope="col">No</th>
-                <th scope="col">Shelf</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Note</th>
-                <th scope="col">Action</th>
+                <th scope="col">製品番号</th>
+                <th scope="col">棟</th>
+                <th scope="col">階</th>
+                <th scope="col">列</th>
+                <th scope="col">番</th>
+                <th scope="col">段</th>
+                <th scope="col">ノート</th>
+                <th scope="col">数量</th>
+                <th scope="col">行動</th>
             </tr>
         </thead>
         <tbody>
@@ -54,7 +54,7 @@
                 <td>{{ $location->Note }}</td>
                 <td>
                     <div class="d-flex">
-                        <a class="btn btn-primary mr-2" href="{{ route('locations.edit', $location->id) }}">Edit</a>
+                        <a class="btn btn-primary mr-2" href="{{ route('locations.edit', $location->id) }}">変更</a>
                         <form id="form-{{ $location->id }}" method="POST"
                             action="{{route('locations.destroy', $location->id)}}">
                             @csrf
@@ -62,7 +62,7 @@
                             <!-- Button trigger modal -->
                             <button id="{{ $location->id }}" type="button" class="btn btn-danger btn-delete"
                                 data-toggle="modal" data-target="#exampleModal">
-                                Delete
+                                削除
                             </button>
                         </form>
                     </div>
@@ -71,7 +71,7 @@
             @endforeach
             @else
             <tr>
-                <th>No product location</th>
+                <th>製品のロケーションがありません。</th>
             </tr>
             @endif
         </tbody>
@@ -83,17 +83,17 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title <span id="idProductLocation"></span></h5>
+                    <h5 class="modal-title" id="exampleModalLabel">削除<span id="idProductLocation"></span></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Do you want to delete?
+					本当に削除しますか?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="btnConfirmDelete">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmDelete">同意</button>
                 </div>
             </div>
         </div>
