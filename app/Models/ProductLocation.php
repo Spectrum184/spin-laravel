@@ -40,4 +40,12 @@ class ProductLocation extends Model
         $location = ProductLocation::find($id);
         $location->delete();
     }
+
+    public function updateLocation($id, $location)
+    {
+        $locationUpdate = ProductLocation::find($id);
+        $locationUpdate->update($location);
+
+        return $locationUpdate->pro_no;
+    }
 }

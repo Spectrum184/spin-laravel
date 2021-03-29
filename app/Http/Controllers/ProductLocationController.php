@@ -96,10 +96,10 @@ class ProductLocationController extends Controller
      */
     public function update(RequestsProductLocation $request, $id)
     {
-        $location = $this->productLocation->findLocationById($id);
-        $location->update($request->all());
+        $location = $request->all();
+        $pro_no = $this->productLocation->findLocationById($id, $location);
 
-        return redirect('export/locations/search?pro_no=' . $location->pro_no)->with('message', 'Updated location');
+        return redirect('export/locations/search?pro_no=' . $pro_no)->with('message', 'Updated location');
     }
 
     /**
