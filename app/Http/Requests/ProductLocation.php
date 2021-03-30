@@ -24,11 +24,11 @@ class ProductLocation extends FormRequest
     public function rules()
     {
         return [
-            'pro_no' => 'required',
-            'building_no' => 'required|integer',
-            'floor_no' => 'integer|nullable',
-            'shelf' => 'integer|nullable',
-            'qty' => 'integer|nullable',
+            'Pro_No' => 'required',
+            'Building_No' => 'required|integer',
+            'Floor_No' => 'integer|nullable',
+            'Shelf' => 'integer|nullable',
+            'Qty' => 'integer|nullable',
         ];
     }
 
@@ -40,8 +40,8 @@ class ProductLocation extends FormRequest
     public function messages()
     {
         return [
-            'pro_no.required' => 'A pro_no is required ok?',
-            'building_no.required' => 'A building_no is required',
+            'Pro_No.required' => 'A pro_no is required ok?',
+            'Building_No.required' => 'A building_no is required',
         ];
     }
 }

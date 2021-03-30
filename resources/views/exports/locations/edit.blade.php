@@ -34,37 +34,38 @@
                 </tr>
             </thead>
             <tbody>
+                <input type="hidden" name="id" value="{{ $location->id }}">
                 <tr>
                     <td>
-                        <input readonly value="{{ $location->Pro_No}}" name="pro_no" type="text" class="form-control"
+                        <input readonly value="{{ $location->Pro_No}}" name="Pro_No" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{$location->Building_No}}" name="building_no" type="text" class="form-control"
+                        <input value="{{$location->Building_No}}" name="Building_No" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{$location->Floor_No}}" name="floor_no" type="text" class="form-control"
+                        <input value="{{$location->Floor_No}}" name="Floor_No" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{$location->Row_Locate}}" name="row_locate" type="text" class="form-control"
+                        <input value="{{$location->Row_Locate}}" name="Row_Locate" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{$location->No_Locate}}" name="no_locate" type="text" class="form-control"
+                        <input value="{{$location->No_Locate}}" name="No_Locate" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{$location->Shelf}}" name="shelf" type="text" class="form-control"
+                        <input value="{{$location->Shelf}}" name="Shelf" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{$location->Qty}}" name="qty" type="text" class="form-control"
+                        <input value="{{$location->Qty}}" name="Qty" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{$location->Note}}" name="note" type="text" class="form-control"
+                        <input value="{{$location->Note}}" name="Note" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td style="width: 200px;">

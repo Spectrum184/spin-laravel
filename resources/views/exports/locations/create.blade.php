@@ -35,35 +35,35 @@
             <tbody>
                 <tr>
                     <td>
-                        <input value="{{old('Pro_No')}}" name="pro_no" type="text" class="form-control"
+                        <input value="{{old('Pro_No')}}" name="Pro_No" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{old('Building_No')}}" name="building_no" type="text" class="form-control"
+                        <input value="{{old('Building_No')}}" name="Building_No" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{old('Floor_No')}}" name="floor_no" type="text" class="form-control"
+                        <input value="{{old('Floor_No')}}" name="Floor_No" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{old('Row_Locate')}}" name="row_locate" type="text" class="form-control"
+                        <input value="{{old('Row_Locate')}}" name="Row_Locate" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{old('No_Locate')}}" name="no_locate" type="text" class="form-control"
+                        <input value="{{old('No_Locate')}}" name="No_Locate" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{old('Shelf')}}" name="shelf" type="text" class="form-control"
+                        <input value="{{old('Shelf')}}" name="Shelf" type="text" class="form-control"
                             aria-label="Default" aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{old('Qty')}}" name="qty" type="text" class="form-control" aria-label="Default"
+                        <input value="{{old('Qty')}}" name="Qty" type="text" class="form-control" aria-label="Default"
                             aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td>
-                        <input value="{{old('Note')}}" name="note" type="text" class="form-control" aria-label="Default"
+                        <input value="{{old('Note')}}" name="Note" type="text" class="form-control" aria-label="Default"
                             aria-describedby="inputGroup-sizing-default">
                     </td>
                     <td style="width: 200px;">

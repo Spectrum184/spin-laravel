@@ -46,8 +46,9 @@ class ProductLocationController extends Controller
      */
     public function store(RequestsProductLocation $request)
     {
-        $location = $this->productLocation::create($request->all());
-        return redirect('export/locations/search?pro_no=' . $location->pro_no)->with('message', 'Created location');
+        $location = $request->all();
+        $pro_no = $this->productLocation->createLocation($location);
+        return redirect('export/locations/search?pro_no=' . $pro_no)->with('message', 'Created location');
     }
 
     /**
@@ -97,7 +98,7 @@ class ProductLocationController extends Controller
     public function update(RequestsProductLocation $request, $id)
     {
         $location = $request->all();
-        $pro_no = $this->productLocation->findLocationById($id, $location);
+        $pro_no = $this->productLocation->updateLocation($id, $location);
 
         return redirect('export/locations/search?pro_no=' . $pro_no)->with('message', 'Updated location');
     }

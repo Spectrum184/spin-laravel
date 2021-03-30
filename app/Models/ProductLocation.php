@@ -37,15 +37,38 @@ class ProductLocation extends Model
 
     public function deleteLocation($id)
     {
-        $location = ProductLocation::find($id);
-        $location->delete();
+        DB::table('product_location')->where('id', $id)->delete();
     }
 
     public function updateLocation($id, $location)
     {
-        $locationUpdate = ProductLocation::find($id);
-        $locationUpdate->update($location);
+        DB::table('product_location')->where('id', $id)->update([
+            'Pro_No'=> $location['Pro_No'],
+            'Building_No'=> $location['Building_No'], 
+            'Floor_No'=> $location['Floor_No'], 
+            'Row_Locate'=> $location['Row_Locate'], 
+            'No_Locate'=> $location['No_Locate'], 
+            'Shelf'=> $location['Shelf'], 
+            'Note'=> $location['Note'], 
+            'Qty'=> $location['Qty'],
+        ]);
 
-        return $locationUpdate->pro_no;
+        return $location['Pro_No'];
+    }
+
+    public function createLocation($location)
+    {       
+        DB::table('product_location')->updateOrInsert([
+            'Pro_No'=> $location['Pro_No'],
+            'Building_No'=> $location['Building_No'], 
+            'Floor_No'=> $location['Floor_No'], 
+            'Row_Locate'=> $location['Row_Locate'], 
+            'No_Locate'=> $location['No_Locate'], 
+            'Shelf'=> $location['Shelf'], 
+            'Note'=> $location['Note'], 
+            'Qty'=> $location['Qty'], 
+        ]);
+
+        return $location['Pro_No'];
     }
 }
