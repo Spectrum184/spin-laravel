@@ -42,7 +42,7 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="{{ route('locations.index')}}">ロケーション管理</a>
-                            <a class="dropdown-item" href="#">製品確認</a>
+                            <a class="dropdown-item" href="{{ route('orderMaster.productConfirm') }}">製品確認</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Something else here</a>
                         </div>
