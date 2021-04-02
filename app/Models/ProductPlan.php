@@ -20,8 +20,6 @@ class ProductPlan extends Model
         $this->calendar = $calendar;
     }
 
-    
-
     public function getCounter()
     {
         $data = DB::table('plan_no_counter_table')->select('*')->get();
@@ -41,7 +39,8 @@ class ProductPlan extends Model
 
     public function createPlan($productNo, $quantity, $deadline)
     {
-        $planNo = $this->getCounter();
+        $planNo = $this->increaseCounter();
+        $planNo = str_pad(strval($this->getCounter()),8,'0');
         $timetmp=Carbon::parse($deadline);
         $timeArr= array();
         
@@ -51,18 +50,23 @@ class ProductPlan extends Model
         }
         else{
             $now = Carbon::now()->format('Y-m-d');
-            // DB::table('productplan_table')->insert(
-            //     [
-            //         'Prod_Plan_No'=>$planNo,
-            //         'Cust_CD'=>5001,
-            //         'Prod_No'=>$productNo,
-            //         'Prod_Plan_Qty'=>$quantity,
-            //         'Req_Due_Date'=>$deadline,
-            //         'Entry_Date'=>$now
-            //     ]
-            //     );
+
+            DB::table('productplan_table')->insert(
+                [
+                    'Prod_Plan_No'=>$planNo,
+                    'Cust_CD'=>5001,
+                    'Prod_No'=>$productNo,
+                    'Prod_Plan_Qty'=>$quantity,
+                    'Req_Due_Date'=>$timetmp,
+                    'Entry_Date'=>$now,
+                    'Comp_Qty'=>0,
+                    'Comp_FG'=>0,
+                ]
+                );
+
             $processTime = $this->productProcess->getProcessTime($productNo);
             $count=count($processTime);
+
             for ($i=$count;$i>0;$i--){
                 for ($j=0;$j<$processTime[$i-1];$j++){
                     do {
@@ -73,9 +77,31 @@ class ProductPlan extends Model
                 $daydata=$timetmp->format('Y-m-d');
                 array_push($timeArr,$daydata);
             }
+            $timeArr=array_reverse($timeArr);
         }
+
         $processCode=$this->productProcess->getProcessCode($productNo);
 
-        return $processCode;
+        for ($i=1;$i<=$count;$i++){
+            DB::table('productplan_details_table')
+            ->insert(
+                [
+                    'Prod_Plan_No'=>$planNo,
+                    'Seq_No'=>$i,
+                    'Proc_CD'=>$processCode[$i-1],
+                    'Prod_Plan_Qty'=>$quantity,
+                    'Req_Due_Date'=>$timeArr[$i-1],
+                ]
+                );
+        }
+        
+        return $timeArr;
+    }
+
+    public function deletePlan($ID)
+    {
+        DB::table('productplan_table')->where('Prod_Plan_No','=',$ID)->delete();
+        DB::table('productplan_details_table')->where('Prod_Plan_No','=',$ID)->delete();
+
     }
 }

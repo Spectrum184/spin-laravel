@@ -33,6 +33,7 @@ Route::prefix('manager')->group(function () {
     Route::get('/', 'HelloController@hello')->name('manager');
     // route to get forecast
     Route::get('/mitsubishi-forecast', 'ForecastController@index')->name('mftbc.forecast.index');
+    Route::get('/mitsubishi-forecast/{id}', 'ForecastController@deletePlan');
     // route for drawing search
     Route::get('drawing/search', 'DrawingController@findDrawing')->name('drawing.search');
     Route::get('drawing', 'DrawingController@index')->name('drawing.index');

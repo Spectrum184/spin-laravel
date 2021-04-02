@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Forecast;
+use App\Models\ProductPlan;
 use Illuminate\Http\Request;
 
 class ForecastController extends Controller
 {
     protected $forecast;
+    protected $product;
 
-    public function __construct(Forecast $forecast)
+    public function __construct(Forecast $forecast, ProductPlan $product)
     {
         $this->forecast = $forecast;
+        $this->product = $product;
     }
     /**
      * Display a listing of the resource.
@@ -135,4 +138,11 @@ class ForecastController extends Controller
     {
         //
     }
+
+    public function deletePlan($id)
+    {
+
+        $this->product->deletePlan($id);
+    }
+
 }
