@@ -223,7 +223,7 @@ const app = {
             );
             return arrayTmp;
         } else if (this.compareDate(dayTmp, session2) == -1) {
-            arrayTmp, push(2);
+            arrayTmp.push(2);
             arrayTmp.push(
                 moment(sessionTmp + session2, "YYYY/MM/DD").diff(
                     moment(),

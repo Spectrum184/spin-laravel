@@ -13,10 +13,14 @@ class ProductPlan extends Model
     protected $table = 'productplan_table';
     protected $connection = 'mysql';
     protected $productProcess;
+    protected $calendar;
 
-    public function __construct(ProductProcess $productProcess) {
+    public function __construct(ProductProcess $productProcess, Calendar $calendar) {
         $this->productProcess = $productProcess;
+        $this->calendar = $calendar;
     }
+
+    
 
     public function getCounter()
     {
@@ -38,23 +42,40 @@ class ProductPlan extends Model
     public function createPlan($productNo, $quantity, $deadline)
     {
         $planNo = $this->getCounter();
-        $now = Carbon::now()->format('Y-m-d');
-        // DB::table('productplan_table')->insert(
-        //     [
-        //         'Prod_Plan_No'=>$planNo,
-        //         'Cust_CD'=>5001,
-        //         'Prod_No'=>$productNo,
-        //         'Prod_Plan_Qty'=>$quantity,
-        //         'Req_Due_Date'=>$deadline,
-        //         'Entry_Date'=>$now,
-        //         'Comp_Qty'=>0,
-        //         'Comp_Date'=>NULL,
-        //         'Comp_FG'=>0
-        //     ]
-        //     );
+        $timetmp=Carbon::parse($deadline);
+        $timeArr= array();
+        
 
-        $max = $this->productProcess->getMaxProcess($productNo);
-        $processTime = $this->productProcess->getProcessTime($productNo);
-        return $max;
+        if ($this->calendar->checkHoliday($timetmp)==1){
+            return 'Error';
+        }
+        else{
+            $now = Carbon::now()->format('Y-m-d');
+            // DB::table('productplan_table')->insert(
+            //     [
+            //         'Prod_Plan_No'=>$planNo,
+            //         'Cust_CD'=>5001,
+            //         'Prod_No'=>$productNo,
+            //         'Prod_Plan_Qty'=>$quantity,
+            //         'Req_Due_Date'=>$deadline,
+            //         'Entry_Date'=>$now
+            //     ]
+            //     );
+            $processTime = $this->productProcess->getProcessTime($productNo);
+            $count=count($processTime);
+            for ($i=$count;$i>0;$i--){
+                for ($j=0;$j<$processTime[$i-1];$j++){
+                    do {
+                    $timetmp=$timetmp->subDay();
+                    }
+                    while ($this->calendar->checkHoliday($timetmp)==1);
+                }
+                $daydata=$timetmp->format('Y-m-d');
+                array_push($timeArr,$daydata);
+            }
+        }
+        $processCode=$this->productProcess->getProcessCode($productNo);
+
+        return $processCode;
     }
 }

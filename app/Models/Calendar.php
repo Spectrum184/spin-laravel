@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 class Calendar extends Model
 {
@@ -28,4 +29,15 @@ class Calendar extends Model
 
         return $numDay;
     }
-}
+
+    public function checkHoliday($day){
+        $tmp=DB::table('calendar_table')
+        ->select('Day_Off_FG')
+        ->where('Key_Date',$day)
+        ->get();
+
+        $dayOff = $tmp[0]->Day_Off_FG;
+
+        return $dayOff;
+    }
+}   

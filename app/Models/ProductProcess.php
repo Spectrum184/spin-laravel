@@ -32,8 +32,8 @@ class ProductProcess extends Model
         $max = 0;
         $data = DB::table('prod_process_master')->select('Proc_No')->where('Parts_No', '=', $pro_no)->get();
         $max = $data->max();
-
-        return $max;
+        $processed = $max->Proc_No;
+        return $processed;
     }
 
     public function getProcessTime($pro_no)
@@ -48,5 +48,15 @@ class ProductProcess extends Model
         } 
 
         return $tmpArr;
+    }
+
+    public function getProcessCode($pro_no)
+    {
+        $data = DB::table('prod_process_master')->select('Proc_CD')->where('Parts_No', '=', $pro_no)->get();
+        $processed=array();
+        for ($i=0;$i<count($data);$i++){
+            array_push($processed,$data[$i]->Proc_CD);
+        }
+        return $processed;
     }
 }
