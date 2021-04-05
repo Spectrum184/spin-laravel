@@ -13,6 +13,7 @@ const productContent = $(".product-content");
 const URL = "http://127.0.0.1:8000/api/";
 const btnForecast = $("#btn-forecast");
 const btnCreatePlan = $('#btn-create-plan');
+const btnCancelPlan = $("#btn-cancel-plan");
 
 const app = {
     data: [],
@@ -313,26 +314,26 @@ const app = {
         const htmls = await this.orderData.map(data => {
             const dataPro = data[0];
 
-            return `<div class=" row mt-2 no-gutters border">
+            return `<div class=" row mt-2 no-gutters border" id="container-${dataPro.ORDER_Prod_No}">
             <div class="col-2 border-right">
                 <div class="card border-0 w-100 h-100">
                     <div class="card-body">
-                        <h5 class="card-title border-bottom">Product Info</h5>
-                        <p class="card-text">Matl_Property: ${dataPro.Matl_Property}</p>
-                        <p class="card-text">ORDER_Prod_No: ${dataPro.ORDER_Prod_No}</p>
-                        <p class="card-text">Prod_Parts_Name: ${dataPro.Prod_Parts_Name} </p>
+                        <h5 class="card-title border-bottom">製品情報</h5>
+                        <p class="card-text" style="font-weight: 700;">製品番号: ${dataPro.ORDER_Prod_No}</p>
+                        <p class="card-text">製品材料: ${dataPro.Matl_Property}</p>
+                        <p class="card-text">製品名称: ${dataPro.Prod_Parts_Name} </p>
                         <p class="card-text">塗装１: ${dataPro.Paint_CD1}</p>
                         <p class="card-text">塗装2: ${dataPro.Paint_CD2}</p>
-                        <p class="card-text">X_Elem_Size: ${dataPro.X_Elem_Size}</p>
-                        <p class="card-text">Y_Elem_Size: ${dataPro.Y_Elem_Size}</p>
-                        <p class="card-text">Z_Elem_Size: ${dataPro.Z_Elem_Size}</p>
+                        <p class="card-text">寸法ーX: ${dataPro.X_Elem_Size}</p>
+                        <p class="card-text">寸法ーY: ${dataPro.Y_Elem_Size}</p>
+                        <p class="card-text">寸法ーZ: ${dataPro.Z_Elem_Size}</p>
                     </div>
                 </div>
             </div>
             <div class="col-6 border-right">
                 <div class="card border-0 w-100 h-100">
                     <div class="card-body">
-                        <h5 class="card-title border-bottom">Chart</h5>
+                        <h5 class="card-title border-bottom">グラフ</h5>
                         <canvas class="w-100" id="canvas-${dataPro.ORDER_Prod_No}"></canvas>
                     </div>
                 </div>
@@ -340,13 +341,13 @@ const app = {
             <div class="col-2 border-right">
                 <div class="card border-0 w-100 h-100">
                     <div class="card-body">
-                        <h5 class="card-title border-bottom">Details</h5>
+                        <h5 class="card-title border-bottom">詳細</h5>
                         <p class="card-text">在庫: ${dataPro.Stock}</p>
                         <p class="card-text">日にち: <span id="day-${dataPro.ORDER_Prod_No}"> </span></p>
                         <p class="card-text">注文数量: <span id="order-${dataPro.ORDER_Prod_No}"> </span></p>
                         <p class="card-text">加工数量: <span id="product-${dataPro.ORDER_Prod_No}"> </span></p>
                         <div class="d-flex">
-                            <button data-toggle="modal" data-target="#modalAddProduct" id="${dataPro.ORDER_Prod_No}" class="btn btn-primary btn-add-product">Add product</button>
+                            <button id="${dataPro.ORDER_Prod_No}" class="btn btn-primary btn-add-product">Add product</button>
                         </div>
                     </div>
                 </div>
@@ -354,9 +355,11 @@ const app = {
             <div class="col-2">
                 <div class="card border-0 w-100 h-100">
                     <div class="card-body">
-                        <h5 class="card-title border-bottom">Recommendation</h5>
-                        <p class="card-text" >進めの日にち: <span id="recommend-day-${dataPro.ORDER_Prod_No}"></span></p>
-                        <p class="card-text">進めの加工数量: <span id="recommend-qty-${dataPro.ORDER_Prod_No}"></span></p>
+                        <h5 class="card-title border-bottom">計算</h5>
+                        <p class="card-text">できるだけ速やかに製品完成出来る日: <span id="recommend-day-${dataPro.ORDER_Prod_No}"></span></p>
+                        <p class="card-text" style="border-bottom: 1px solid #D5D5D5;">最少加工数量: <span id="recommend-qty-${dataPro.ORDER_Prod_No}"></span></p>
+                        
+                        <p class="card-text">必要な部品:</p> 
                         <div id="recommend-component-${dataPro.ORDER_Prod_No}"></div>
                     </div>
                 </div>
@@ -389,9 +392,9 @@ const app = {
             if (arrComponent.length > 0) {
                 arrComponent.forEach(component => {
                     componentInfo += `
-                    <p>Product number: ${component[0]}</p>
-                    <p>Quantity: ${Math.abs(component[3])}</p>
-                    <p>Process name: ${component[4]} </p>
+                    <p>&#9711&nbsp&nbsp&nbsp部品番号: ${component[0]}</p>
+                    <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp必要数量: ${Math.abs(component[3])}</p>
+                    <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp工程: ${component[4]} </p>
                     `;
                 });
             } else {
@@ -452,6 +455,14 @@ const app = {
               .catch(function (error) {
                 console.log(error);
               });
+        },
+
+        // hide modal create plan
+        btnCancelPlan.onclick = function(){
+            const modal = $(".modal-container");
+
+            modal.classList.remove('show-modal');
+            modal.classList.add('hide-modal');
         }
     },
 
@@ -474,6 +485,7 @@ const app = {
             const date = $("#day-" + id);
             const productQty = $("#product-" + id);
             const orderQty = $("#order-" + id);
+            const modal = $(".modal-container");
 
             button.onclick = function() {
                 $("#modalAddProduct #input-date").value = date.innerText;
@@ -481,6 +493,9 @@ const app = {
                 $("#modalAddProduct .product-qty").innerText =
                     productQty.innerText;
                 $("#modalAddProduct #addProductTitle").innerText = id;
+                console.log(modal);
+                modal.classList.remove("hide-modal");
+                modal.classList.add("show-modal");
             };
         });
     },

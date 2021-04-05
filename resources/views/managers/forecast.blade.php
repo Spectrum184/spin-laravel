@@ -25,26 +25,22 @@
             <option value="不明品">不明品</option>
         </select>
 
-        <button id="btn-load-data" class="ml-2 btn btn-primary">Load</button>
+        <button id="btn-load-data" class="ml-2 btn btn-primary">データ読み込み</button>
     </div>
     <div class="col-3"></div>
 </div>
 <div class="row justify-content-center mt-3">
-    <button id="btn-forecast" class="btn btn-primary">Forecast</button>
+    <button id="btn-forecast" class="btn btn-primary">計算</button>
 </div>
 <div class="product-content"></div>
 
 <!-- Modal -->
-<div class="modal fade" id="modalAddProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-container hide-modal">
+    <div class="modal-create-plan" id="modalAddProduct">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Add more product: <span id="addProductTitle"></span>
+                <h5 class="modal-title" id="exampleModalLongTitle">生産工程を加える: <span id="addProductTitle"></span>
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 <div class="d-flex mb-3">
@@ -60,18 +56,18 @@
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend" id="plan-quantity">
-                        <span class="input-group-text">Quantity</span>
+                        <span class="input-group-text">数量</span>
                     </div>
                     <input type="text" class="form-control" aria-label="Default"
                         aria-describedby="inputGroup-sizing-default" id="input-qty">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="btn-create-plan">Save</button>
+                <button type="button" class="btn btn-secondary" id='btn-cancel-plan'>閉じる</button>
+                <button type="button" class="btn btn-primary" id="btn-create-plan">保存する</button>
             </div>
         </div>
-    </div>
+</div>
 </div>
 
 <script src="{{ asset('js/forecast.js') }}"></script>
