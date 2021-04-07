@@ -65,6 +65,15 @@ class Forecast extends Model
         return $processedData;
     }
 
+    public function filterByProductID($productNo)
+    {
+        $data = $this->loadData;
+
+        $filtered=collect($data)->where('ORDER_Prod_No','=',$productNo)->all();
+
+        return $filtered;
+    }
+
     /**
      * process data in to managable format
      */
@@ -141,6 +150,13 @@ class Forecast extends Model
         $date = $data[2];
         $counter = $this->productPlan->createPlan($productNo, $quantity, $date);
 
-        return $counter;
+        return [
+            'quantity'=> $quantity,
+            'date'=> $date,
+            'counter'=>$counter
+        ];
     }
+
+    
+    
 }

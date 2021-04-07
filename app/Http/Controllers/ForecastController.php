@@ -54,6 +54,15 @@ class ForecastController extends Controller
         return response()->json($products);
     }
 
+    public function readPlan(Request $request)
+    {
+        $productNumber = $request->get("product");
+
+        $output = $this->product->readPlan($productNumber);
+
+        return response()->json($output);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -61,6 +70,7 @@ class ForecastController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function createPlan(Request $request)
     {
         $productNumber = $request->productNumber;
@@ -73,6 +83,7 @@ class ForecastController extends Controller
         return response()->json($counter);
     }
 
+    
     /**
      * Show the form for creating a new resource.
      *

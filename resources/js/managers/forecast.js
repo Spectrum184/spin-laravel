@@ -11,9 +11,14 @@ const btnLoadData = $("#btn-load-data");
 const selected = $("#select-division");
 const productContent = $(".product-content");
 const URL = "http://127.0.0.1:8000/api/";
-const btnForecast = $("#btn-forecast");
+const btnForecast = $("#btn-forecast"); 
 const btnCreatePlan = $('#btn-create-plan');
 const btnCancelPlan = $("#btn-cancel-plan");
+const loading = $("#loading");
+let btnDeletePlan = null;
+const btnEditPlan = $('.edit-plan-icon .material-icons');
+
+var arrChart = [];
 
 const app = {
     data: [],
@@ -25,11 +30,12 @@ const app = {
     monthData: [],
     timeData: null,
     // data list of chart
-    arrChart: [],
     // list button add product
     btnAddProd: [],
     forecastData: [],
     forecastDataResponse: [],
+    //list btn show plan
+    listBtnShowPlan: [],
 
     //compare to date
     compareDate: function(dateTimeA, dateTimeB) {
@@ -309,6 +315,20 @@ const app = {
             alert("Error: " + error.data);
         }
     },
+
+    //read product plan of a singular item
+    loadProductPlan: async function(value){
+        try {
+            const response = await axios.get(
+                URL + "manager/mitsubishi-forecast/read-plan?product=" + value
+            );
+            
+            return response;
+        } catch (error) {
+            alert("Error: " + error.data);
+        }
+    },
+
     // render chart
     render: async function() {
         const htmls = await this.orderData.map(data => {
@@ -342,13 +362,16 @@ const app = {
                 <div class="card border-0 w-100 h-100">
                     <div class="card-body">
                         <h5 class="card-title border-bottom">詳細</h5>
-                        <p class="card-text">在庫: ${dataPro.Stock}</p>
+                        <p class="card-text" style="border-bottom: 1px solid #E9E9E9;">現在在庫: ${dataPro.Stock}</p>
                         <p class="card-text">日にち: <span id="day-${dataPro.ORDER_Prod_No}"> </span></p>
-                        <p class="card-text">注文数量: <span id="order-${dataPro.ORDER_Prod_No}"> </span></p>
-                        <p class="card-text">加工数量: <span id="product-${dataPro.ORDER_Prod_No}"> </span></p>
-                        <div class="d-flex">
-                            <button id="${dataPro.ORDER_Prod_No}" class="btn btn-primary btn-add-product">Add product</button>
+                        <p class="card-text">製品予報在庫数: <span id="order-${dataPro.ORDER_Prod_No}"> </span></p>
+                        <p class="card-text">生産予定計算: <span id="product-${dataPro.ORDER_Prod_No}"> </span></p>
+                        <h6 style="border-top: 1px solid #E9E9E9; padding: 4px 0 0 0;" class="d-flex justify-content-center" >生産予定</h6>
+                        <div class="mb-2 d-flex justify-content-center">
+                            <button id="${dataPro.ORDER_Prod_No}" class="btn btn-primary btn-add-product">加える</button>
+                            <button id="show-${dataPro.ORDER_Prod_No}" class="ml-2 btn btn-primary btn-show-plan">Show</button>
                         </div>
+                        <div id="list-plan-${dataPro.ORDER_Prod_No}"></div>
                     </div>
                 </div>
             </div>
@@ -357,7 +380,7 @@ const app = {
                     <div class="card-body">
                         <h5 class="card-title border-bottom">計算</h5>
                         <p class="card-text">できるだけ速やかに製品完成出来る日: <span id="recommend-day-${dataPro.ORDER_Prod_No}"></span></p>
-                        <p class="card-text" style="border-bottom: 1px solid #D5D5D5;">最少加工数量: <span id="recommend-qty-${dataPro.ORDER_Prod_No}"></span></p>
+                        <p class="card-text" style="border-bottom: 1px solid #E9E9E9;">最少加工数量: <span id="recommend-qty-${dataPro.ORDER_Prod_No}"></span></p>
                         
                         <p class="card-text">必要な部品:</p> 
                         <div id="recommend-component-${dataPro.ORDER_Prod_No}"></div>
@@ -398,21 +421,57 @@ const app = {
                     `;
                 });
             } else {
-                componentInfo = `<p>No component</p>`;
+                componentInfo = `<p>部品生産が必要ではない。</p>`;
             }
 
             this.bindRecommendData(id, componentInfo, date, qty);
         });
     },
 
+    // render plan
+    renderPlan : async function(proNo){
+        const showPlan = $("#list-plan-"+ proNo);
+        let plan = "";
+        const response = await this.loadProductPlan(proNo);
+        const data = response.data;
+        //console.log(data);
+        
+        if (data.length>0) {
+            plan = data.map(d=>{
+                return `
+                    <div class="show-plan-${d.Prod_Plan_No} row no-gutters" id="plan-${d.Prod_Plan_No}">
+                        <span id="plan-date-${d.Prod_Plan_No}" class="ml-1 col-4" style="font-size:0.8rem;">${d.Req_Due_Date}</span>
+                        <span id="plan-qty-${d.Prod_Plan_No}" class="ml-1 col-3" style="font-size:0.8rem;">${d.Prod_Plan_Qty}</span>
+                        <div class="edit-plan-icon"><span id="btn-edit-${d.Prod_Plan_No}" class="material-icons">edit</span></div>
+                        <div class="delele-plan-icon"><span id="btn-delete-${d.Prod_Plan_No}" class="material-icons">delete</span></div>
+                    </div>
+                ` ;
+             })
+        }else{
+            showPlan.innerHTML = "<span>No plan</span>"
+        }
+
+        showPlan.innerHTML = plan.join("");
+        
+    },
+
+    deletePlan: function(Id){
+        console.log(Id);
+    }
+    ,
+
     // handle event
     handleEvent: function() {
         const _this = this;
-
+        
+        
         btnLoadData.onclick = async function() {
+            console.time(); 
             const selectedValue = selected.value;
 
             // load data from server
+            loading.classList.remove("hide-modal");
+            loading.classList.add("show-modal");
             const response = await _this.loadData(selectedValue);
 
             _this.orderData = response.data;
@@ -425,45 +484,87 @@ const app = {
             _this.drawAllChart(_this.orderData);
 
             _this.btnAddProd = $$(".btn-add-product");
+            _this.listBtnShowPlan = $$(".btn-show-plan");
             _this.bindActionForButton(_this.btnAddProd);
+
+            await _this.bindActionBtnShow(_this.listBtnShowPlan);
+
+            loading.classList.remove("show-modal");
+            loading.classList.add("hide-modal");
+            console.timeEnd();       
         };
 
         // forecast process
         btnForecast.onclick = async function() {
+            loading.classList.remove("hide-modal");
+            loading.classList.add("show-modal");
             const response = await _this.loadDataForecast(_this.forecastData);
             _this.forecastDataResponse = response.data;
 
             _this.renderRecommend(_this.forecastDataResponse);
 
             _this.forecastData = [];
+            loading.classList.remove("show-modal");
+            loading.classList.add("hide-modal");
         };
 
         // create plan process
-        btnCreatePlan.onclick = function () {
+        btnCreatePlan.onclick = async function () {
+            const modal = $(".modal-container");
+            const modalQuantity = $(".modal-container #input-qty");
             const datePlan = $('#input-date').value;
             const productNumber = $('#addProductTitle').innerText;
             const quantity = $('#input-qty').value;
+            modal.classList.remove('show-modal');
+            modal.classList.add('hide-modal');
+            modalQuantity='';
+            let dataRes = null;
 
-            axios.post( URL + "manager/mitsubishi-forecast/create-plan", {
+          await axios.post( URL + "manager/mitsubishi-forecast/create-plan", {
                 datePlan: datePlan,
                 productNumber: productNumber,
                 quantity: quantity
               })
               .then(function (response) {
-                console.log(response);
+                dataRes = response.data;
               })
               .catch(function (error) {
                 console.log(error);
               });
-        },
+            
+            
+            _this.updateChartPlus(productNumber, dataRes.date, dataRes.quantity );
+            
+            
+        };
 
         // hide modal create plan
         btnCancelPlan.onclick = function(){
+            const quantity = $(".modal-container #input-qty");
             const modal = $(".modal-container");
 
             modal.classList.remove('show-modal');
             modal.classList.add('hide-modal');
+            quantity.value= "";
+
+        };
+    },
+
+    updateChartPlus: function(productNumber, date, quantity){
+        const qty = Number.parseInt(quantity);
+        const chartdata=arrChart.filter(value=>value.id==productNumber);
+        const chart=chartdata[0].chart;
+        const dataAfterProd =  chart.data.datasets[1].data;
+        const i = this.timeData.indexOf(date);
+        
+        for (let index = i; index < dataAfterProd.length; index++) {
+
+        dataAfterProd[index] += qty;            
         }
+        //console.log(dataAfterProd);
+        chart.data.datasets[1].data = dataAfterProd;
+
+        chart.update();
     },
 
     loadDataForecast: async function(data) {
@@ -479,6 +580,35 @@ const app = {
         }
     },
 
+    actionDeletePlan: function(btnDeletePlan){
+        const _this = this;
+        btnDeletePlan.forEach(element => {
+            const id = element.id.substring(11);
+            const plan = $("#plan-"+ id);
+
+            element.onclick = function(){
+                _this.deletePlan(id);
+                plan.classList.add("hide-plan");
+        }
+        });
+    },
+
+    // bind action for list btn show plan
+    bindActionBtnShow: async function(listBtnShow){
+        const _this = this;
+        listBtnShow.forEach(button=>{
+            const id = button.id.substring(5);
+            
+            button.onclick = async function(){
+                await _this.renderPlan(id);
+                btnDeletePlan = $$('.delele-plan-icon .material-icons');
+                
+                _this.actionDeletePlan(btnDeletePlan);
+            }
+        })
+    },
+
+    // bind action for button add product
     bindActionForButton: function(listButton) {
         listButton.forEach(button => {
             const id = button.id;
@@ -493,7 +623,7 @@ const app = {
                 $("#modalAddProduct .product-qty").innerText =
                     productQty.innerText;
                 $("#modalAddProduct #addProductTitle").innerText = id;
-                console.log(modal);
+
                 modal.classList.remove("hide-modal");
                 modal.classList.add("show-modal");
             };
@@ -501,6 +631,7 @@ const app = {
     },
 
     drawAllChart: function(arrData) {
+        arrChart.splice(0, arrChart.length);
         arrData.forEach(data => {
             const firstData = data[0];
             const firstDataOrderID = firstData.ORDER_Prod_No;
@@ -524,7 +655,10 @@ const app = {
                 firstDataOrderID
             );
 
-            this.arrChart.push(chartName);
+            arrChart.push({
+                chart: chartName,
+                id: firstDataOrderID
+            });
         });
     },
     // draw one chart
@@ -541,7 +675,7 @@ const app = {
 
         this.forecastData.push({
             Prod_No: chartName,
-            qty: dataNow[this.dayData.length],
+            qty: dataAfterProduct[this.dayData.length + 3 ],
             day: this.timeData[this.dayData.length - 1]
         });
 
@@ -554,14 +688,14 @@ const app = {
                 labels: timeData,
                 datasets: [
                     {
-                        label: "Now",
+                        label: "製品在庫情報",
                         fill: false,
                         borderColor: "red",
                         data: dataNow,
                         pointRadius: 1.5
                     },
                     {
-                        label: "After Product",
+                        label: "生産予定計算",
                         fill: false,
                         borderColor: "green",
                         data: dataAfterProduct,

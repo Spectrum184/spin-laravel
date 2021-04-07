@@ -19,13 +19,84 @@
     opacity: 1;
 }
 
+.edit-plan-icon{
+  color:darkblue;
+  margin-left:5px;
+}
+
+.edit-plan-icon:hover{
+  color:mediumslateblue;
+  cursor: pointer;
+}
+
+.delete-plan-icon{
+  margin-left: 5px;
+}
+
+.delete-plan-icon:hover{
+  color:red;
+  cursor: pointer;
+}
+
 .show-modal{
     display: "block";
 }
 
 .hide-modal{
     display: none;
-}@charset "UTF-8";
+}
+
+.hide-plan{
+  display: none !important;
+}
+/* -------------LOADING------------------- */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .loading svg {
+    font-size: 5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    -webkit-animation: text 10s ease-in-out infinite;
+            animation: text 10s ease-in-out infinite;
+  }
+  
+  @-webkit-keyframes text {
+    50% {
+      opacity: 0.1;
+    }
+  }
+  
+  @keyframes text {
+    50% {
+      opacity: 0.1;
+    }
+  }
+  
+  .loading polygon {
+    stroke-dasharray: 22;
+    stroke-dashoffset: 1;
+    animation: dash 4s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite
+      alternate-reverse;
+  }
+  
+  @-webkit-keyframes dash {
+    to {
+      stroke-dashoffset: 234;
+    }
+  }
+  
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 234;
+    }
+  }
+
+@charset "UTF-8";
 
 /*!
  * Bootstrap v4.6.0 (https://getbootstrap.com/)

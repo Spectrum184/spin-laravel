@@ -21,6 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('manager')->group(function () {
     // api get data for forecast
     Route::get('/mitsubishi-forecast', 'ForecastController@returnData');
+    Route::get('/mitsubishi-forecast/read-plan', 'ForecastController@readPlan');
     Route::post('/mitsubishi-forecast/forecast', 'ForecastController@returnForecastData');
     Route::post('/mitsubishi-forecast/create-plan', 'ForecastController@createPlan');
+    Route::post('/mitsubishi-forecast/delete-plan', 'ForecastController@deletePlan');
 });

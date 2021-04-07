@@ -19,6 +19,25 @@
     opacity: 1;
 }
 
+.edit-plan-icon{
+  color:darkblue;
+  margin-left:5px;
+}
+
+.edit-plan-icon:hover{
+  color:mediumslateblue;
+  cursor: pointer;
+}
+
+.delete-plan-icon{
+  margin-left: 5px;
+}
+
+.delete-plan-icon:hover{
+  color:red;
+  cursor: pointer;
+}
+
 .show-modal{
     display: "block";
 }
@@ -26,3 +45,41 @@
 .hide-modal{
     display: none;
 }
+
+.hide-plan{
+  display: none !important;
+}
+/* -------------LOADING------------------- */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .loading svg {
+    font-size: 5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: text 10s ease-in-out infinite;
+  }
+  
+  @keyframes text {
+    50% {
+      opacity: 0.1;
+    }
+  }
+  
+  .loading polygon {
+    stroke-dasharray: 22;
+    stroke-dashoffset: 1;
+    animation: dash 4s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite
+      alternate-reverse;
+  }
+  
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 234;
+    }
+  }
+

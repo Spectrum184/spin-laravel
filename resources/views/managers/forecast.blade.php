@@ -25,12 +25,14 @@
             <option value="不明品">不明品</option>
         </select>
 
+       <div style="min-width: 200px">
         <button id="btn-load-data" class="ml-2 btn btn-primary">データ読み込み</button>
+       </div>
     </div>
     <div class="col-3"></div>
 </div>
 <div class="row justify-content-center mt-3">
-    <button id="btn-forecast" class="btn btn-primary">計算</button>
+    <button style="min-width: 100px" id="btn-forecast" class="btn btn-primary">計算</button>
 </div>
 <div class="product-content"></div>
 
@@ -49,7 +51,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="plan-deadline-date">Date</span>
+                        <span class="input-group-text" id="plan-deadline-date">予定日にち</span>
                     </div>
                     <input type="text" class="form-control" aria-label="Default"
                         aria-describedby="inputGroup-sizing-default" id="input-date">
@@ -68,6 +70,21 @@
             </div>
         </div>
 </div>
+</div>
+<div id="loading" class="hide-modal">
+    <div class="position-fixed w-100 h-100 text-center loading" style="background: #0008; color:white; top: 0; left: 0; z-index: 10000" >
+        <svg with="250" height="250" viewBox="0 0 40 50">
+          <polygon
+            stroke="#fff"
+            strokeWidth="1"
+            fill="none"
+            points="20,1 40,40 1,40"
+          />
+          <text fill="#fff" x="5" y="47">
+            Sonobese
+          </text>
+        </svg>
+    </div>
 </div>
 
 <script src="{{ asset('js/forecast.js') }}"></script>

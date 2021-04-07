@@ -47,9 +47,16 @@ class ProductPlan extends Model
     {
         $data=DB::table('productplan_table')
             ->select('*')
-            ->where(['Prod_No','=',$productNo],['Comp_Fg','=',0])->get();
-        return $data;
-            
+            ->where([['Prod_No','=',$productNo],['Comp_FG','=',0]])->get();
+        $altered=collect($data)->map(function($item){
+            return [
+                'Prod_Plan_No'=>$item->Prod_Plan_No,
+                'Req_Due_Date'=>substr($item->Req_Due_Date,5),
+                'Prod_Plan_Qty'=>$item->Prod_Plan_Qty
+            ];
+        });
+
+        return $altered;
     }
 
     //create a new production plan
