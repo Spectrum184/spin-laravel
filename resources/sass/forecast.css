@@ -20,7 +20,7 @@
 }
 
 .edit-plan-icon{
-  color:darkblue;
+  color:#3490dc;
   margin-left:5px;
 }
 
@@ -33,9 +33,13 @@
   margin-left: 5px;
 }
 
-.delete-plan-icon:hover{
-  color:red;
+.delete-plan-icon .material-icons{
+  color:#e3342f;
+}
+
+.delele-plan-icon .material-icons:hover{
   cursor: pointer;
+  color:#e3342f;
 }
 
 .show-modal{
@@ -44,6 +48,14 @@
 
 .hide-modal{
     display: none;
+}
+
+.hide-modal-edit{
+  display: none;
+}
+
+.show-modal-plan{
+  display: "block";
 }
 
 .hide-plan{

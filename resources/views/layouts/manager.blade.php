@@ -61,7 +61,7 @@
     <div class="container-fluid mt-3 mb-3">
         @yield('content')
     </div>
-
+    <script type="text/javascript" src="https://rawgit.com/sfrauenfelder/chartjs-plugin-gridline-background/master/chartjs-plugin-gridline-background.js"></script>
 </body>
 
 </html>

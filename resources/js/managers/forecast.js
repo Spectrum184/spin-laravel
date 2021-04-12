@@ -1,3 +1,5 @@
+const { data } = require("jquery");
+
 window.axios = require("axios");
 window.moment = require("moment");
 require("chart.js");
@@ -14,11 +16,16 @@ const URL = "http://127.0.0.1:8000/api/";
 const btnForecast = $("#btn-forecast"); 
 const btnCreatePlan = $('#btn-create-plan');
 const btnCancelPlan = $("#btn-cancel-plan");
+const btnCancelEditPlan = $("#btn-hide-plan");
+const modalEditPlan = $("#modalEditPlan");
+const btnModifyPlan = $("#btn-edit-plan");
 const loading = $("#loading");
+
 let btnDeletePlan = null;
-const btnEditPlan = $('.edit-plan-icon .material-icons');
+let listBtnEditPlan = null;
 
 var arrChart = [];
+
 
 const app = {
     data: [],
@@ -28,6 +35,8 @@ const app = {
     dayData: [],
     sessionData: [],
     monthData: [],
+    weekdays: [],
+    holidayColor: [],
     timeData: null,
     // data list of chart
     // list button add product
@@ -291,7 +300,11 @@ const app = {
             const day = moment()
                 .add(index, "days")
                 .format("MM/DD");
+            const weekday = moment()
+                .add(index, "days")
+                .format('dddd');
             this.dayData.push(day);
+            this.weekdays.push(weekday);
         }
     },
 
@@ -303,6 +316,26 @@ const app = {
         this.timeData = this.dayData.concat(this.sessionData, this.monthData);
     },
 
+    //generate holiday color array for chart drawing
+    generateColorCode: function(weekdays, timeData){
+        var tmparr=[];
+        var tmp= null;
+        for (let index = 0; index < weekdays.length; index++) {
+            const element = weekdays[index];
+            if ((element == 'Saturday')||(element == 'Sunday')){
+                tmp = 'lightgrey';
+            } else{
+                tmp= 'white';
+            }
+            tmparr.push(tmp)
+        }
+        for (let index = weekdays.length; index < timeData.length; index++){
+            tmp='#faebd7';
+            tmparr.push(tmp)
+        }
+        return tmparr;
+    },
+
     // load data of division
     loadData: async function(value) {
         try {
@@ -310,6 +343,19 @@ const app = {
                 URL + "manager/mitsubishi-forecast?division=" + value
             );
 
+            return response;
+        } catch (error) {
+            alert("Error: " + error.data);
+        }
+    },
+
+    //read a singular product plan
+    loadPlan: async function(ID){
+        try{
+            const response = await axios.get(
+                URL + "manager/mitsubishi-forecast/get-plan?Id=" + ID
+            );
+            
             return response;
         } catch (error) {
             alert("Error: " + error.data);
@@ -434,7 +480,7 @@ const app = {
         let plan = "";
         const response = await this.loadProductPlan(proNo);
         const data = response.data;
-        //console.log(data);
+       // console.log(data);
         
         if (data.length>0) {
             plan = data.map(d=>{
@@ -444,21 +490,30 @@ const app = {
                         <span id="plan-qty-${d.Prod_Plan_No}" class="ml-1 col-3" style="font-size:0.8rem;">${d.Prod_Plan_Qty}</span>
                         <div class="edit-plan-icon"><span id="btn-edit-${d.Prod_Plan_No}" class="material-icons">edit</span></div>
                         <div class="delele-plan-icon"><span id="btn-delete-${d.Prod_Plan_No}" class="material-icons">delete</span></div>
+                        <span id="plan-hide-${d.Pro_No}" class="plan-hide-${d.Prod_Plan_No}"></span>
                     </div>
                 ` ;
              })
+
+             showPlan.innerHTML = plan.join("");
         }else{
             showPlan.innerHTML = "<span>No plan</span>"
         }
-
-        showPlan.innerHTML = plan.join("");
-        
     },
 
+    // delete plan and update chart
     deletePlan: function(Id){
-        console.log(Id);
-    }
-    ,
+        const qty = $("#plan-qty-"+ Id).innerText;
+        const date = $("#plan-date-" + Id).innerText;
+        const prodNoTmp = $(".plan-hide-" + Id).id;
+        const prodNo = prodNoTmp.substring(10);
+        const day=date.replace('-','/');
+
+        axios.post(URL + "manager/mitsubishi-forecast/delete-plan", {id: Id}).then(response=> console.log(response)).catch(err => console.log(err));
+
+        console.log(day);
+        this.updateChartPlus(prodNo, day, 0 - Number.parseInt(qty));
+    },
 
     // handle event
     handleEvent: function() {
@@ -511,29 +566,41 @@ const app = {
         // create plan process
         btnCreatePlan.onclick = async function () {
             const modal = $(".modal-container");
-            const modalQuantity = $(".modal-container #input-qty");
-            const datePlan = $('#input-date').value;
+            let modalQuantity = $(".modal-container #input-qty");
+            const datePlan = moment().format('YYYY') + '-' +$('#input-date').value;
+            
             const productNumber = $('#addProductTitle').innerText;
             const quantity = $('#input-qty').value;
             modal.classList.remove('show-modal');
             modal.classList.add('hide-modal');
             modalQuantity='';
-            let dataRes = null;
+            let response = null;
+            
 
-          await axios.post( URL + "manager/mitsubishi-forecast/create-plan", {
-                datePlan: datePlan,
-                productNumber: productNumber,
-                quantity: quantity
-              })
-              .then(function (response) {
-                dataRes = response.data;
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
+            try {
+                response = await axios.post(
+                    URL + "manager/mitsubishi-forecast/create-plan",{
+                        datePlan: datePlan,
+                        productNumber: productNumber,
+                        quantity: quantity 
+                    }
+                );
+            } 
+             catch (error) {
+                alert("Error: " + error.data);
+            }
+            const day=$('#input-date').value.replace('-','/');
+            const msg= response.data.counter.msg
             
-            
-            _this.updateChartPlus(productNumber, dataRes.date, dataRes.quantity );
+            console.log(day)
+            if (msg=="Error") {alert(msg);} 
+            else{
+                if (day.length ==5){_this.updateChartPlus(productNumber, day, response.data.quantity );}
+                else{
+                    day=day.substring(day.length-5);
+                    _this.updateChartPlus(productNumber, day, response.data.quantity );
+                }
+            }
             
             
         };
@@ -548,6 +615,35 @@ const app = {
             quantity.value= "";
 
         };
+
+        btnCancelEditPlan.onclick = function(){
+            modalEditPlan.classList.remove("show-modal-plan")
+            modalEditPlan.classList.add("hide-modal-edit")
+        }
+
+        btnModifyPlan.onclick = async function(){
+            const id = $("#editPlanTitle").innerText;
+            const ProNoTmp = $(".plan-hide-"+id).id;
+            const ProNo =ProNoTmp.substring(10);
+            let dateTmp = $("#input-plan-date").value; 
+            const date = moment().format("YYYY") + "-" + dateTmp;
+            const qtyTmp = $("#input-plan-qty").value;
+            const OdateTmp = $("#plan-date-"+id).innerHTML;
+            const OqtyTmp = $("#plan-qty-" + id).innerHTML;
+            const qty = Number.parseInt(qtyTmp);
+            const Oqty= Number.parseInt(OqtyTmp);
+            dateTmp=dateTmp.replace('-','/');
+            const Odate=OdateTmp.replace('-','/');
+            
+            
+            const result = await _this.modifyPlan(id, date, qty);
+            
+            if (result.data.msg=='error'){alert(result.data.msg);}
+            else {
+            _this.updateChartModify(ProNo,Odate,dateTmp,Oqty,qty);}
+            modalEditPlan.classList.remove("show-modal-plan")
+            modalEditPlan.classList.add("hide-modal-edit")
+        }
     },
 
     updateChartPlus: function(productNumber, date, quantity){
@@ -556,16 +652,52 @@ const app = {
         const chart=chartdata[0].chart;
         const dataAfterProd =  chart.data.datasets[1].data;
         const i = this.timeData.indexOf(date);
-        
         for (let index = i; index < dataAfterProd.length; index++) {
 
         dataAfterProd[index] += qty;            
         }
-        //console.log(dataAfterProd);
         chart.data.datasets[1].data = dataAfterProd;
 
         chart.update();
     },
+
+    updateChartModify: function(productNumber, originalDate, changedDate, originalQuantity, changedQuantity){
+        const Oqty = Number.parseInt(originalQuantity);
+        const Cqty = Number.parseInt(changedQuantity);
+        const diffQty = Cqty-Oqty;
+        const chartdata=arrChart.filter(value=>value.id==productNumber);
+        const chart=chartdata[0].chart;
+        const dataAfterProd =  chart.data.datasets[1].data;
+        const i = this.timeData.indexOf(changedDate);
+        const j = this.timeData.indexOf(originalDate);
+       
+        if (i<j){
+            for (let index = i; index < j; index++) {
+                dataAfterProd[index] += Cqty;
+            }
+            
+            for (let index = j; index < dataAfterProd.length; index++) {
+                 dataAfterProd[index] += diffQty;
+            }
+            }else if (i>j) {
+                for (let index = j; index < i; index++) {
+                    dataAfterProd[index] -= Oqty;
+                }
+                for (let index = i; index < dataAfterProd.length; index++) {
+                     dataAfterProd[index] += diffQty;
+                } 
+            }else{
+                console.log(dataAfterProd[i])
+                for (let index = i; index < dataAfterProd.length; index++) {
+                    dataAfterProd[index] += diffQty;
+                    
+                }
+                
+            }
+            chart.data.datasets[1].data = dataAfterProd;
+
+            chart.update();
+        },
 
     loadDataForecast: async function(data) {
         try {
@@ -580,17 +712,57 @@ const app = {
         }
     },
 
-    actionDeletePlan: function(btnDeletePlan){
+    // bind action delete plan icon
+    actionDeletePlan: function(listBtnDeletePlan){
         const _this = this;
-        btnDeletePlan.forEach(element => {
+        listBtnDeletePlan.forEach(element => {
             const id = element.id.substring(11);
             const plan = $("#plan-"+ id);
 
             element.onclick = function(){
-                _this.deletePlan(id);
+                const input = _this.deletePlan(id);
+                console.log(input);
+                plan.classList.remove("show-plan");
                 plan.classList.add("hide-plan");
         }
         });
+    },
+
+    //action modify plan
+    modifyPlan: async function(id, date, qty){
+        try {
+            const response = await axios.post(
+                URL + "manager/mitsubishi-forecast/modify-plan",
+                {id: id, date: date, qty:qty }
+            );
+
+            return response;
+        } catch (error) {
+            alert("Error: " + error.data);
+        }
+        // axios.post(URL + "manager/mitsubishi-forecast/modify-plan", {id: id, date: date, qty:qty }).then(res=>console.log(res)).catch(err=>console.log(err))
+    },
+
+    //bind action edit plan
+    actionEditPlan : function(listBtnEditPlan){
+        const _this = this;
+        const planTitle = $("#editPlanTitle");
+        const planQty = $("#input-plan-qty");
+        const planDate = $("#input-plan-date");
+
+        listBtnEditPlan.forEach(element => {
+            const id = element.id.substring(9);
+            const date = $("#plan-date-"+id);
+            const qty = $("#plan-qty-" + id);
+
+            element.onclick = function(){
+                modalEditPlan.classList.remove("hide-modal-edit");
+                modalEditPlan.classList.add("show-modal-plan");
+                planTitle.innerText = id;
+                planQty.value = qty.innerText;
+                planDate.value = date.innerText;
+            }
+        })
     },
 
     // bind action for list btn show plan
@@ -602,8 +774,11 @@ const app = {
             button.onclick = async function(){
                 await _this.renderPlan(id);
                 btnDeletePlan = $$('.delele-plan-icon .material-icons');
-                
+                listBtnEditPlan = $$(".edit-plan-icon .material-icons");
+                console.log(listBtnEditPlan);
                 _this.actionDeletePlan(btnDeletePlan);
+
+                _this.actionEditPlan(listBtnEditPlan);
             }
         })
     },
@@ -704,7 +879,7 @@ const app = {
                 ]
             },
             options: {
-                responsive: true,
+                responsive: false,
                 tooltips: {
                     mode: "index",
                     intersect: false
@@ -715,10 +890,25 @@ const app = {
                     }
                 },
                 scales: {
-                    yAxes: [{}],
+                    xAxes:[
+                        {
+                            type: 'category',
+                            gridLines: {
+                                drawOnChartArea: true,
+                                
+                                backgroundColorRepeat: false,
+                                backgroundColor: this.holidayColor,
+                            },
+                            ticks:{
+                                autoSkip: false,
+                            }
+                        }
+                    ],
+                    
                     yAxes: [
                         {
                             display: true,
+                            type: 'linear',
                             gridLines: {
                                 zeroLineColor: "black"
                             },
@@ -755,7 +945,10 @@ const app = {
 
         this.initTimeData();
 
-        //console.log(this.timeData);
+        this.holidayColor=this.generateColorCode(this.weekdays, this.timeData);
+        console.log(this.holidayColor)
+        console.log(this.weekdays)
+        console.log(this.timeData)
 
         //render chart
         this.render();

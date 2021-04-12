@@ -69,7 +69,39 @@
                 <button type="button" class="btn btn-primary" id="btn-create-plan">保存する</button>
             </div>
         </div>
+    </div>
 </div>
+
+<!-- Modal Edit Plan -->
+<div class="modal-container hide-modal-edit" id="modalEditPlan">
+    <div class="modal-create-plan">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" >生産工程を加える: <span id="editPlanTitle"></span>
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">予定日にち</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Default"
+                        aria-describedby="inputGroup-sizing-default" id="input-plan-date">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend" id="plan-quantity">
+                        <span class="input-group-text">数量</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Default"
+                        aria-describedby="inputGroup-sizing-default" id="input-plan-qty">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id='btn-hide-plan'>閉じる</button>
+                <button type="button" class="btn btn-primary" id="btn-edit-plan">保存する</button>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="loading" class="hide-modal">
     <div class="position-fixed w-100 h-100 text-center loading" style="background: #0008; color:white; top: 0; left: 0; z-index: 10000" >

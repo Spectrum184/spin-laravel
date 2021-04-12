@@ -54,6 +54,14 @@ class ForecastController extends Controller
         return response()->json($products);
     }
 
+    public function getPlan(Request $request){
+        $Id = $request->get('Id');
+
+        $plan = $this->product->getPlan($Id);
+
+        return response()->json($plan);
+    }
+
     public function readPlan(Request $request)
     {
         $productNumber = $request->get("product");
@@ -122,9 +130,16 @@ class ForecastController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function modifyPlan(Request $request)
     {
-        //
+        $data = $request->all();
+        $id = $data["id"];
+        $date = $data["date"];
+        $qty = $data["qty"];
+
+        $data = $this->product->modifyPlan($id, $date, $qty);
+
+        return response()->json($data);
     }
 
     /**
@@ -150,10 +165,12 @@ class ForecastController extends Controller
         //
     }
 
-    public function deletePlan($id)
+    public function deletePlan(Request $request)
     {
+        $id = $request->id;
+        $data = $this->product->deletePlan($id);
 
-        $this->product->deletePlan($id);
+        return response()->json($data);
     }
 
 }

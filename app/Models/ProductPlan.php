@@ -42,6 +42,17 @@ class ProductPlan extends Model
         return $affected;
     }
 
+    public function getPlan($ID)
+        {
+            $output = DB::table('productplan_table')->select('*')->where('Prod_Plan_No','=',$ID)->get();
+
+            return [
+                'Pro_No'=>$output->Prod_No,
+                'Req_Due_Date'=>$output->Req_Due_Date,
+                'Prod_Plan_Qty'=>$output->Prod_Plan_Qty
+            ];
+        }
+
     //read list of incomplete production plans of a product
     public function readPlan($productNo)
     {
@@ -52,7 +63,8 @@ class ProductPlan extends Model
             return [
                 'Prod_Plan_No'=>$item->Prod_Plan_No,
                 'Req_Due_Date'=>substr($item->Req_Due_Date,5),
-                'Prod_Plan_Qty'=>$item->Prod_Plan_Qty
+                'Prod_Plan_Qty'=>$item->Prod_Plan_Qty,
+                'Pro_No' => $item->Prod_No,
             ];
         });
 
@@ -69,7 +81,7 @@ class ProductPlan extends Model
         
         //return error upon choosing a holiday as the deadline
         if ($this->calendar->checkHoliday($timetmp)==1){
-            return 'Error';
+            return ["msg"=>'Error'];
         }
         //main 
         else{
@@ -122,18 +134,20 @@ class ProductPlan extends Model
                     ]
                     );
                 }
+                return ["msg"=>'ok'];
         }
         
-        return $timeArr;
+        
     }
 
     //modify an existing plan
     public function modifyPlan($ID, $day, $qty){
         $timetmp=Carbon::parse($day); 
+        $quantity=(int)$qty;
         $modifyFlag=0;
 
         if ($this->calendar->checkHoliday($timetmp)==1){
-            return 'error';
+            return ["msg"=>'error'];
         }
         else
         {
@@ -143,15 +157,16 @@ class ProductPlan extends Model
                     ->get();
 
             //modify both deadline and quantity 
-            if ($input['Req_Due_Date']!=$day){
+            if ($input[0]->Req_Due_Date != $day){
                 //changing product plan's deadline and quantity on the general production plan table
-                DB::table('productplan_table')->where('Prod_Plan_No','=',$ID)->update(['Req_Due_Date'=>$timetmp],['Prod_Plan_Qty'=>$qty]);
+                DB::table('productplan_table')->where('Prod_Plan_No','=',$ID)->update(['Req_Due_Date'=>$timetmp,'Prod_Plan_Qty'=>$quantity]);
 
                 //deleting associative plans on the detailed production plan table
                 DB::table('productplan_details_table')->where('Prod_Plan_No','=',$ID)->delete();
 
                 //re-calculating detailed production plan and inserting into said table
-                $processTime = $this->productProcess->getProcessTime($input['Prod_No']);
+                $processTime = $this->productProcess->getProcessTime($input[0]->Prod_No);
+                $timeArr=[];
                 $count=count($processTime);
                 
 
@@ -167,7 +182,7 @@ class ProductPlan extends Model
                 }
                 $timeArr=array_reverse($timeArr);
         
-                $processCode=$this->productProcess->getProcessCode($input['Prod_No']);
+                $processCode=$this->productProcess->getProcessCode($input[0]->Prod_No);
 
                 for ($i=1;$i<=$count;$i++){
                     DB::table('productplan_details_table')
@@ -176,7 +191,7 @@ class ProductPlan extends Model
                             'Prod_Plan_No'=>$ID,
                             'Seq_No'=>$i,
                             'Proc_CD'=>$processCode[$i-1],
-                            'Prod_Plan_Qty'=>$qty,
+                            'Prod_Plan_Qty'=>$quantity,
                             'Req_Due_Date'=>$timeArr[$i-1],
                         ]
                         );
@@ -185,12 +200,13 @@ class ProductPlan extends Model
             }
 
             //modify quantity only
-                if (($input['Prod_Plan_Qty']!=$qty)&&($modifyFlag==0)){
+                if (($input[0]->Prod_Plan_Qty!=$qty)&&($modifyFlag==0)){
                 DB::table('productplan_table')->where('Prod_Plan_No','=',$ID)->update(['Prod_Plan_Qty'=>$qty]);
                 DB::table('productplan_details_table')->where('Prod_Plan_No','=',$ID)->update(['Prod_Plan_Qty'=>$qty]);
             }
-        }
-        return $input;
+            return ["msg"=> "OK"];
+         }
+        
     }
 
     //delete an existing plan
@@ -199,5 +215,6 @@ class ProductPlan extends Model
         DB::table('productplan_table')->where('Prod_Plan_No','=',$ID)->delete();
         DB::table('productplan_details_table')->where('Prod_Plan_No','=',$ID)->delete();
 
+        return $ID;
     }
 }
