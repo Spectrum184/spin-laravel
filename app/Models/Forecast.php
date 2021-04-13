@@ -96,7 +96,7 @@ class Forecast extends Model
     public function forecastProduct($data)
     {
         $tmp = collect($data)->filter(function ($value) {
-            return (float)$value['qty'] < 0;
+            return (int)$value['qty'] < 0;
         })->all();
 
         $products = $this->initDataForecast($tmp);

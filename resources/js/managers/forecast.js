@@ -850,7 +850,7 @@ const app = {
 
         this.forecastData.push({
             Prod_No: chartName,
-            qty: dataAfterProduct[this.dayData.length + 3 ],
+            qty: dataAfterProduct[this.timeData.length - 1 ],
             day: this.timeData[this.dayData.length - 1]
         });
 
@@ -946,9 +946,9 @@ const app = {
         this.initTimeData();
 
         this.holidayColor=this.generateColorCode(this.weekdays, this.timeData);
-        console.log(this.holidayColor)
-        console.log(this.weekdays)
-        console.log(this.timeData)
+        // console.log(this.dayData)
+        // console.log(this.timeData)
+        
 
         //render chart
         this.render();

@@ -17,3 +17,4 @@ mix.js("resources/js/app.js", "public/js")
 mix.js(["resources/js/exports/exports.js"], "public/js/exports.js");
 
 mix.js(["resources/js/managers/forecast.js"], "public/js/forecast.js");
+

@@ -28,3 +28,8 @@ Route::prefix('manager')->group(function () {
     Route::post('/mitsubishi-forecast/delete-plan', 'ForecastController@deletePlan');
     Route::post('/mitsubishi-forecast/modify-plan', 'ForecastController@modifyPlan');
 });
+
+// Route::prefix('machine')->group(function () {
+//     //routes for transfering data
+//     Route::get('/machine-operation/get-department-data', 'MachineController@getDepartmentOperations');
+// });
